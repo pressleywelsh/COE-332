@@ -1,2 +1,2 @@
 # COE-332
-COE 332 work
+My work for COE 332 will be in this repository.
