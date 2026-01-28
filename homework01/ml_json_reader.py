@@ -1,5 +1,6 @@
 import json
 from pydantic import BaseModel
+from pathlib import Path
 
 
 class MeteoriteLanding(BaseModel):
@@ -30,12 +31,14 @@ def check_hemisphere(ml: MeteoriteLanding) -> str:
 
 
 def main():
-    with open('Meteorite_Landings_Simple.json', 'r') as f:
+    data_path = Path.cwd().parent / "Meteorite_Landings_Simple.json"
+    
+    with data_path.open("r") as f:
         ml_data = json.load(f)
     
     landings = [MeteoriteLanding(**ml) for ml in ml_data["meteorite_landings"]]
 
-    print(compute_average_mass(landingsd))
+    print(compute_average_mass(landings))
     
     for ml in landings: 
             print(check_hemisphere(ml))
