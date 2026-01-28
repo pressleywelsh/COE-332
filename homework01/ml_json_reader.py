@@ -33,11 +33,11 @@ def main():
     with open('Meteorite_Landings_Simple.json', 'r') as f:
         ml_data = json.load(f)
     
-    landings = [MeteoriteLanding(**ml) for ml in ml_data["meteorite_landings"]
+    landings = [MeteoriteLanding(**ml) for ml in ml_data["meteorite_landings"]]
 
-    print(compute_average_mass(mls))
+    print(compute_average_mass(landingsd))
     
     for ml in landings: 
-            print(check_hemisphere(mls))
+            print(check_hemisphere(ml))
 if __name__ == '__main__':
     main()
