@@ -3,8 +3,8 @@ import xmltodict
 import yaml
 import json
 from pydantic import BaseModel
+from pathlib import Path
 
-data = {}
 
 class MeteoriteLanding(BaseModel):
     name: str
@@ -42,8 +42,6 @@ def main():
 
     with yaml_path.open("w") as o:
         yaml.dump(yaml_data, o)
-
-    landings = [MeteoriteLanding(**ml) for ml in data["meteorite_landings"]]
 
 
 if __name__ == '__main__':
