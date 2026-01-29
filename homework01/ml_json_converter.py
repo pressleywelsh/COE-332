@@ -38,10 +38,10 @@ def main():
         o.write(xmltodict.unparse(xml_data, pretty=True))
 
     yaml_path = Path.cwd().parent / "Meteorite_Landings.yaml"
-    yaml_data = 
+    yaml_data = {"meteorite_landings": rows} 
 
     with yaml_path.open("w") as o:
-        yaml.dump(data, o)
+        yaml.dump(yaml_data, o)
 
     landings = [MeteoriteLanding(**ml) for ml in data["meteorite_landings"]]
 
