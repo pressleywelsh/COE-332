@@ -1,4 +1,5 @@
 from pydantic import BaseModel, Field, model_validator
+import logging
 
 
 class MeteoriteLanding(BaseModel):
@@ -15,7 +16,7 @@ class MeteoriteLanding(BaseModel):
             "lat": values["reclat"],
             "long": values["reclong"],
         }
-    return values
+        return values
 
 class GeoLocation(BaseModel):
     lat: float
@@ -27,6 +28,16 @@ def compute_average_mass(landings: list[MeteoriteLandings]) -> float:
     return (total_mass / len(landings))
 
 def check_hemisphere(ml: MeteoriteLanding) -> str:
+    """
+    Given a meteorite landing's location (latitude and longitude in decimal notation),
+    returns which hemispheres those coordinates land in.
+
+    Args:
+        ml: A MeteoriteLanding object
+
+    Returns:
+        location: Short string listing two hemispheres.
+    """
     location = ''
     if (ml.location.lat > 0):
         location = 'Northern'
@@ -37,3 +48,40 @@ def check_hemisphere(ml: MeteoriteLanding) -> str:
     else:
         location = f'{location} & Western'
     return(location)
+
+def compute_average_mass(landings: list[MeteoriteLanding]) -> float:
+    """
+    Iterates through a list of meteorite landing objects, adds their masses together
+    and returns that sum divided by the total number or landings
+
+    Args:
+        landings: A list of meteorite landing objects
+
+    Returns:
+        result: Average value.
+    """
+    if (len(landings) == 0):
+        logging.error("landings is empty")
+        return 0
+    total_mass = 0.
+    for ml in landings:
+        total_mass += ml.mass
+    return (total_mass / len(landings))
+
+def count_classes(landings: list[MeteoriteLanding]) -> dict[str, int]:
+    """
+    Counts how many meteorite landings occur in each meteorite class
+
+    Args:
+        landings: A list of MeteoriteLanding objects
+
+    Returns:
+        classes_observed: Dictionary of meteorite classes and their counts.
+    """
+    classes_observed = {}
+    for ml in landings:
+        if ml.class_name not in classes_observed:
+            classes_observed[ml.class_name] = 0
+
+        classes_observed[ml.class_name] += 1
+    return(classes_observed)
