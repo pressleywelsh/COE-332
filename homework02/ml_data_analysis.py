@@ -1,7 +1,8 @@
 import json
+import logging
 from pydantic import BaseModel, Field, model_validator
 from pathlib import Path
-import logging
+from gcd_algorithm import great_circle_distance
 
 
 class GeoLocation(BaseModel):
