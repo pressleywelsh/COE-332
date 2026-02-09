@@ -4,6 +4,10 @@ from pathlib import Path
 import logging
 
 
+class GeoLocation(BaseModel):
+    lat: float
+    long: float
+
 class MeteoriteLanding(BaseModel):
     name: str
     id: int
@@ -19,10 +23,6 @@ class MeteoriteLanding(BaseModel):
             "long": values["reclong"],
         }
         return values
-
-class GeoLocation(BaseModel):
-    lat: float
-    long: float
 
 def check_hemisphere(ml: MeteoriteLanding) -> str:
     """
@@ -84,7 +84,7 @@ def count_classes(landings: list[MeteoriteLanding]) -> dict[str, int]:
     return(classes_observed)
 
 def main():
-    data_path = Path.cwd().parent / "Meteorite_Landings_Simple.json"
+    data_path = Path.cwd().parent / "Meteorite_Landings.json"
 
     with data_path.open("r") as f:
         ml_data = json.load(f)
@@ -95,7 +95,8 @@ def main():
 
     for ml in landings:
         print(check_hemisphere(ml))
-        print(count_classes(landings))
+
+    print(count_classes(landings))
 
 if __name__ == '__main__':
     main()
