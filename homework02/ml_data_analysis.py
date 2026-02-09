@@ -1,5 +1,6 @@
 import json
 from pydantic import BaseModel, Field, model_validator
+from pathlib import Path
 import logging
 
 
@@ -83,8 +84,9 @@ def count_classes(landings: list[MeteoriteLanding]) -> dict[str, int]:
     return(classes_observed)
 
 def main():
+    data_path = Path.cwd().parent / "Meteorite_Landings_Simple.json"
 
-    with open('Meteorite_Landings.json', 'r') as f:
+    with data_path.open("r") as f:
         ml_data = json.load(f)
 
     landings = [MeteoriteLanding(**ml) for ml in ml_data["meteorite_landings"]]
