@@ -88,9 +88,17 @@ def main():
     data_path = Path.cwd().parent / "Meteorite_Landings.json"
 
     with data_path.open("r") as f:
-        ml_data = json.load(f)
+        data = json.load(f)
 
-    landings = [MeteoriteLanding(**ml) for ml in ml_data["meteorite_landings"]]
+    landings = [MeteoriteLanding(**ml) for ml in data["meteorite_landings"]]
+    rows = [ml.model_dump() for ml in landings]
+
+    csv_path = Path.cwd() / "Meteorite_Landings.csv"
+
+    with csv_path.open("w") as o:
+        csv_dict_writer = csv.DictWriter(o, rows[0].keys())
+        csv_dict_writer.writeheader()
+        csv_dict_writer.writerows(rows)
 
     print(compute_average_mass(landings))
 
@@ -99,7 +107,7 @@ def main():
 
     print(count_classes(landings))
 
-    r=6371000
+    r=6371
     distance_1and2 = great_circle_distance(
             landings[0].location.lat, landings[0].location.long,
             landings[1].location.lat, landings[1].location.long, r)
