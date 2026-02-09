@@ -99,5 +99,21 @@ def main():
 
     print(count_classes(landings))
 
+    r=6371000
+    distance_1and2 = great_circle_distance(
+            landings[0].location.lat, landings[0].location.long,
+            landings[1].location.lat, landings[1].location.long, r)
+    print("distance between landing 1 and 2: ", distance_1and2)
+
+    distance_3and4 = great_circle_distance(
+            landings[2].location.lat, landings[2].location.long,
+            landings[3].location.lat, landings[3].location.long, r)
+    print("distance between landing 3 and 4: ", distance_3and4)
+
+    distance_5and6 = great_circle_distance(
+            landings[4].location.lat, landings[4].location.long,
+            landings[5].location.lat, landings[5].location.long, r)
+    print("distance between landing 5 and 6: ", distance_5and6)
+
 if __name__ == '__main__':
     main()
