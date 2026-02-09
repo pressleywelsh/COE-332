@@ -21,11 +21,6 @@ class MeteoriteLanding(BaseModel):
 class GeoLocation(BaseModel):
     lat: float
     long: float
-def compute_average_mass(landings: list[MeteoriteLandings]) -> float:
-    total_mass = 0.
-    for ml in landings:
-        total_mass += ml.mass
-    return (total_mass / len(landings))
 
 def check_hemisphere(ml: MeteoriteLanding) -> str:
     """
