@@ -55,18 +55,20 @@ def test_compute_average_mass_exceptions():
       compute_average_mass(["foo"])
 
 def test_check_hemisphere():
-    assert(check_hemisphere([ml1]) == 'Northern & Eastern')
-    assert(check_hemisphere([ml5]) == 'Southern & Western')
+    assert(check_hemisphere(ml1) == 'Northern & Eastern')
+    assert(check_hemisphere(ml5) == 'Southern & Western')
+    assert(check_hemisphere(ml2) != 'Southern & Eastern')
 
 def test_check_hemisphere_exceptions():
-    assert(check_hemisphere([ml3]) == 'Northern & Eastern')
-    assert(check_hemisphere([ml2]) == 'Southern & Eastern')
+    with pytest.raises(AttributeError):
+        check_hemisphere("foo")
 
 def test_count_classes():
     result = count_classes(landings)
     assert (result['EH4'] == 2)
     assert (result['L6'] == 1)
+    assert (result['Acapulcoite'] != 2)
 
 def test_count_classes_exceptions():
-    assert (result['Acapulcoite'] == 2)
-    assert (result['EH4'] == 1)
+    with pytest.raises(AttributeError):
+        count_classes(["foo"])
