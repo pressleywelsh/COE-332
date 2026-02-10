@@ -62,7 +62,11 @@ def test_check_hemisphere_exceptions():
     assert(check_hemisphere([ml3]) == 'Northern & Eastern')
     assert(check_hemisphere([ml2]) == 'Southern & Eastern')
 
-#def test_count_classes():
+def test_count_classes():
+    result = count_classes(landings)
+    assert (result['EH4'] == 2)
+    assert (result['L6'] == 1)
 
-
-#def test_count_classes_exceptions():
+def test_count_classes_exceptions():
+    assert (result['Acapulcoite'] == 2)
+    assert (result['EH4'] == 1)
