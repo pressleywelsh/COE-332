@@ -14,7 +14,7 @@ This script contains the great_circle_distance function which takes five float a
 This is the unit test script for gcd_algorithm.py which is included to ensure the great_circle_distance function is working correctly. It tests two cases and evaluates them using pytest.approx(), tests if identical coordinates return zero, and checks for an error when entering a string.
 
 ### Data instructions
-This homework requires the Meteorite_Landings.json data which can be obtained from NASA. It should be in the parent directory of the homework02 folder for the script to locate it accurately.
+This homework requires the Meteorite_Landings.json data which can be obtained from NASA. It should be in the directory of the homework02 folder for the script to locate it accurately.
 
 ### Obtaining and understanding results
 To run the analysis, go to the homework02 folder and enter: "uv run python ml_data_analysis.py". The code generates a CSV version of the Meteorite_Landings.json dataset, prints the average meteorite mass, prints the hemisphere classification for each landing, prints the count of each class, and the great_circle_distances between some of the landings. The DEBUG messages throughout are used to track the code.
