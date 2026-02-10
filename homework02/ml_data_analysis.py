@@ -96,25 +96,20 @@ def count_classes(landings: list[MeteoriteLanding]) -> dict[str, int]:
     return(classes_observed)
 
 def main():
-    data = {}
-    data_path = Path.cwd().parent / "Meteorite_Landings.json"
-
-    with data_path.open("r") as f:
+    with open("Meteorite_Landings.json", "r") as f:
         data = json.load(f)
 
-    landings = [MeteoriteLanding(**ml) for ml in data["meteorite_landings"]]
+    #landings = [MeteoriteLanding(**ml) for ml in data["meteorite_landings"]]
     rows = data["meteorite_landings"]
 
-    csv_path = Path.cwd() / "Meteorite_Landings.csv"
-
-    with csv_path.open("w") as o:
+    with open("Meteorite_Landings.csv", "w", newline="") as o:
         csv_dict_writer = csv.DictWriter(o, rows[0].keys())
         csv_dict_writer.writeheader()
         csv_dict_writer.writerows(rows)
 
     logging.debug("csv file successfully written")
 
-    with csv_path.open("r") as f:
+    with open("Meteorite_Landings.csv", "r") as f:
         reader = csv.DictReader(f)
         landings = [MeteoriteLanding(**row) for row in reader]
 
