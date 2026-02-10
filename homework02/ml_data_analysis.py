@@ -69,6 +69,8 @@ def compute_average_mass(landings: list[MeteoriteLanding]) -> float:
     total_mass = 0.
     for ml in landings:
         total_mass += ml.mass
+        if ml.mass == 0:
+            logging.warning(f"Meteorite with zero mass found: {ml.name}")
     logging.debug(f"average mass computed of: {total_mass/len(landings)}")
     return (total_mass / len(landings))
 
@@ -121,6 +123,8 @@ def main():
     if len(landings) == 0:
         logging.error("No data loaded, can not perform calculations and analysis")
         return 0
+    if (len(landings)<4):
+        logging.warning(f"Not enough landings to produce accurately representative data. Only {len(landings)} landings recorded.")
 
     print(compute_average_mass(landings))
 
