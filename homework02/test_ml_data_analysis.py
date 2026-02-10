@@ -64,6 +64,7 @@ def test_check_hemisphere_exceptions():
         check_hemisphere("foo")
 
 def test_count_classes():
+    landings = [ml1, ml2, ml3, ml4, ml5, ml6]
     result = count_classes(landings)
     assert (result['EH4'] == 2)
     assert (result['L6'] == 1)
