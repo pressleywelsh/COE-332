@@ -6,6 +6,8 @@ from pathlib import Path
 from gcd_algorithm import great_circle_distance
 
 
+logging.basicConfig(level=logging.DEBUG)
+
 class GeoLocation(BaseModel):
     lat: float
     long: float
@@ -37,6 +39,7 @@ def check_hemisphere(ml: MeteoriteLanding) -> str:
     Returns:
         location: Short string listing two hemispheres.
     """
+    logging.debug(f"Checking hemisphere of coordinate: {ml.location}")
     location = ''
     if (ml.location.lat > 0):
         location = 'Northern'
@@ -59,12 +62,14 @@ def compute_average_mass(landings: list[MeteoriteLanding]) -> float:
     Returns:
         result: Average value.
     """
+    logging.debug("compute average mass function implemented")
     if (len(landings) == 0):
         logging.error("landings is empty")
         return 0
     total_mass = 0.
     for ml in landings:
         total_mass += ml.mass
+    logging.debug(f"average mass computed of: {total_mass/len(landings)}")
     return (total_mass / len(landings))
 
 def count_classes(landings: list[MeteoriteLanding]) -> dict[str, int]:
@@ -77,12 +82,15 @@ def count_classes(landings: list[MeteoriteLanding]) -> dict[str, int]:
     Returns:
         classes_observed: Dictionary of meteorite classes and their counts.
     """
+    logging.debug(f"Counting classes of {len(landings)} landings")
     classes_observed = {}
     for ml in landings:
         if ml.class_name not in classes_observed:
             classes_observed[ml.class_name] = 0
+            logging.debug(f"New class of {ml.class_name} observed")
 
         classes_observed[ml.class_name] += 1
+    logging.debug(f"{len(classes_observed)} classes observed")
     return(classes_observed)
 
 def main():
@@ -102,9 +110,17 @@ def main():
         csv_dict_writer.writeheader()
         csv_dict_writer.writerows(rows)
 
+    logging.debug("csv file successfully written")
+
     with csv_path.open("r") as f:
         reader = csv.DictReader(f)
         landings = [MeteoriteLanding(**row) for row in reader]
+
+    logging.debug("data successfully loaded")
+
+    if len(landings) == 0:
+        logging.error("No data loaded, can not perform calculations and analysis")
+        return 0
 
     print(compute_average_mass(landings))
 
@@ -128,6 +144,8 @@ def main():
             landings[4].location.lat, landings[4].location.long,
             landings[5].location.lat, landings[5].location.long, r)
     print("distance between landing 5 and 6: ", distance_5and6)
+
+    logging.debug("all calculations successfully completed")
 
 if __name__ == '__main__':
     main()
