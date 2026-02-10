@@ -1,5 +1,6 @@
 import json
 import logging
+import csv
 from pydantic import BaseModel, Field, model_validator
 from pathlib import Path
 from gcd_algorithm import great_circle_distance
@@ -85,13 +86,14 @@ def count_classes(landings: list[MeteoriteLanding]) -> dict[str, int]:
     return(classes_observed)
 
 def main():
+    data = {}
     data_path = Path.cwd().parent / "Meteorite_Landings.json"
 
     with data_path.open("r") as f:
         data = json.load(f)
 
     landings = [MeteoriteLanding(**ml) for ml in data["meteorite_landings"]]
-    rows = [ml.model_dump() for ml in landings]
+    rows = data["meteorite_landings"]
 
     csv_path = Path.cwd() / "Meteorite_Landings.csv"
 
