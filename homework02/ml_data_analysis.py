@@ -100,6 +100,10 @@ def main():
         csv_dict_writer.writeheader()
         csv_dict_writer.writerows(rows)
 
+    with csv_path.open("r") as f:
+        reader = csv.DictReader(f)
+        landings = [MeteoriteLanding(**row) for row in reader]
+
     print(compute_average_mass(landings))
 
     for ml in landings:
