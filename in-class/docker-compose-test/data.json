@@ -1,0 +1,94 @@
+{
+  "meteorite_landings": [
+    {
+      "name": "0",
+      "id": "10001",
+      "recclass": "CR2-an",
+      "mass (g)": "6347",
+      "reclat": "4.5970",
+      "reclong": "-42.8260",
+      "GeoLocation": "(4.5970, -42.8260)"
+    },
+    {
+      "name": "1",
+      "id": "10002",
+      "recclass": "CV3",
+      "mass (g)": "4197",
+      "reclat": "-45.6802",
+      "reclong": "75.3105",
+      "GeoLocation": "(-45.6802, 75.3105)"
+    },
+    {
+      "name": "2",
+      "id": "10003",
+      "recclass": "CI1",
+      "mass (g)": "6431",
+      "reclat": "-2.9866",
+      "reclong": "-34.5013",
+      "GeoLocation": "(-2.9866, -34.5013)"
+    },
+    {
+      "name": "3",
+      "id": "10004",
+      "recclass": "EH4",
+      "mass (g)": "9766",
+      "reclat": "-37.2779",
+      "reclong": "45.7706",
+      "GeoLocation": "(-37.2779, 45.7706)"
+    },
+    {
+      "name": "4",
+      "id": "10005",
+      "recclass": "H4",
+      "mass (g)": "2811",
+      "reclat": "-79.3668",
+      "reclong": "61.3979",
+      "GeoLocation": "(-79.3668, 61.3979)"
+    },
+    {
+      "name": "5",
+      "id": "10006",
+      "recclass": "LL5",
+      "mass (g)": "4684",
+      "reclat": "58.2168",
+      "reclong": "-0.9770",
+      "GeoLocation": "(58.2168, -0.9770)"
+    },
+    {
+      "name": "6",
+      "id": "10007",
+      "recclass": "CV3",
+      "mass (g)": "6899",
+      "reclat": "-64.3074",
+      "reclong": "11.8739",
+      "GeoLocation": "(-64.3074, 11.8739)"
+    },
+    {
+      "name": "7",
+      "id": "10008",
+      "recclass": "LL5",
+      "mass (g)": "5412",
+      "reclat": "-81.9750",
+      "reclong": "-77.9001",
+      "GeoLocation": "(-81.9750, -77.9001)"
+    },
+    {
+      "name": "8",
+      "id": "10009",
+      "recclass": "LL5",
+      "mass (g)": "8467",
+      "reclat": "22.7271",
+      "reclong": "30.9700",
+      "GeoLocation": "(22.7271, 30.9700)"
+    },
+    {
+      "name": "9",
+      "id": "10010",
+      "recclass": "CI1",
+      "mass (g)": "6992",
+      "reclat": "-34.5200",
+      "reclong": "30.7829",
+      "GeoLocation": "(-34.5200, 30.7829)"
+    }
+  ]
+}
