@@ -1,6 +1,9 @@
 # **Meteorite Landings Data Analysis and Distance Computation**
 This homework took the Meteorite_Landings.json dataset, parsed it into a CSV file, and then analyzed it through a variety of functions. We added the great_circle_distance function that was utilized in the main script to compute summary statistics along with compute_average_mass, check_hemisphere, and count_classes. This assignment had a strong emphasis on using proper software engineering practices such as logging, documenting, and unit testing.
 
+## What the program does
+The code generates a CSV version of the Meteorite_Landings.json dataset, prints the average meteorite mass, prints the hemisphere classification for each landing, prints the count of each class, and the great_circle_distances between some of the landings. The DEBUG messages throughout are used to track the code.
+
 ### ml_data_analysis.py
 This is the main analyzing script for this homework, it is where everything is tied together. It loads and parses the meteorite landing dataset, runs all of the computations, and runs the great_circle_distance function.
 
@@ -14,7 +17,17 @@ This script contains the great_circle_distance function which takes five float a
 This is the unit test script for gcd_algorithm.py which is included to ensure the great_circle_distance function is working correctly. It tests two cases and evaluates them using pytest.approx(), tests if identical coordinates return zero, and checks for an error when entering a string.
 
 ### Data instructions
-This homework requires the Meteorite_Landings.json data which can be obtained from NASA. It should be in the directory of the homework02 folder for the script to locate it accurately.
+This homework requires the Meteorite_Landings.json data which can be obtained from NASA. It should be in the directory of the homework03 folder for the script to locate it accurately.
 
-### Obtaining and understanding results
-To run the analysis, go to the homework02 folder and enter: "uv run python ml_data_analysis.py". The code generates a CSV version of the Meteorite_Landings.json dataset, prints the average meteorite mass, prints the hemisphere classification for each landing, prints the count of each class, and the great_circle_distances between some of the landings. The DEBUG messages throughout are used to track the code.
+### How to run in a container
+To build the docker image you run the command: docker build -t <username>/homework03:1.0 ./ 
+In order to test if it built correctly you can run docker images to make sure it ran. 
+To download the data, you need to run: wget https://raw.githubusercontent.com/tacc/coe-332-sp26/main/docs/unit05/scripts/Meteorite_Landings.json
+This will download the data into the homework03 file. The -v used at run time makes our data accessible by creating a volume mount. 
+To run the containerized code you call: docker run --rm \
+                      -v $PWD/Meteorite_Landings.json:/data/Meteorite_Landings.json \
+                      <username>/homework03:1.0 \
+                      ml_data_analysis.py /data/Meteorite_Landings.json
+To run the code, you then call: uv run ml_data_analysis.py /data/Meteorite_Landings.json
+This runs the code and creates all of the output.
+To run the tests you call: docker run --rm <username>/homework03:1.0 pytest
