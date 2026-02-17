@@ -30,7 +30,7 @@ This will download the data into the homework03 file. The -v used at run time ma
 To start the container you call: docker run --rm \
 -it \
 -v $PWD/Meteorite_Landings.json:/data/Meteorite_Landings.json \
-pressleywelsh/homework03:1.0 \
+<username>/homework03:1.0 \
 /bin/bash
 To run the code, you call: uv run ml_data_analysis.py /data/Meteorite_Landings.json
 To run the tests you call: docker run --rm <username>/homework03:1.0 pytest
