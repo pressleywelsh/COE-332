@@ -1,6 +1,7 @@
 import json
 import logging
 import csv
+import sys
 from pydantic import BaseModel, Field, model_validator
 from gcd_algorithm import great_circle_distance
 
@@ -95,7 +96,7 @@ def count_classes(landings: list[MeteoriteLanding]) -> dict[str, int]:
     return(classes_observed)
 
 def main():
-    with open("Meteorite_Landings.json", "r") as f:
+    with open(sys.argv[1], "r") as f:
         data = json.load(f)
 
     #landings = [MeteoriteLanding(**ml) for ml in data["meteorite_landings"]]
