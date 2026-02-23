@@ -18,6 +18,15 @@ class vectors(BaseModel):
             if isinstance(values.get(key), dict) and "#text" in values[key]:
                 values[key] = values[key]["#text"]
         return values
+def timeRange(NASA: list[vectors]) -> str:
+    firstEpoch = NASA[0].EPOCH
+    lastEpoch = NASA[len(NASA)-1].EPOCH
+    time_range = (f"The data spans from {firstEpoch} to {lastEpoch}")
+    return time_range
+
+def fullEpoch(NASA: list[vectors]) -> vectors:
+    recentEpoch = NASA[len(NASA)-1]
+    return recentEpoch
 
 def main():
     xml = requests.get(f"https://nasa-public-data.s3.amazonaws.com/iss-coords/current/ISS_OEM/ISS.OEM_J2K_EPH.xml")
@@ -25,10 +34,7 @@ def main():
     data = xmltodict.parse(unsortedData)
     rows = data["ndm"]["oem"]["body"]["segment"]["data"]["stateVector"]
     NASA = [vectors(**row) for row in rows]
-    print(type(data))
-    print(data.keys())
-    print(len(rows))
-    print(NASA[0])
+    print(timeRange(NASA))
 
 if __name__ == '__main__':
     main()
