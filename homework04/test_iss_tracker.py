@@ -1,5 +1,6 @@
 from iss_tracker import vectors, timeRange, recentEpoch, calcSpeed, averageSpeed
 import pytest
+from math import sqrt
 
 row1 = vectors(** { "EPOCH": "2026-112T03:19:44.000Z",
                    "X": "4823.7049518326174",
@@ -38,16 +39,16 @@ row5 = vectors(**{"EPOCH": "2002-145T18:22:11.000Z",
                   "Z_DOT": "-3.6149281752038472"})
 
 def test_timeRange():
-    assert(timeRange(row1, row2, row3, row4) == (f"The data spans from {row1.EPOCH} to {row4.EPOCH}"))
-    assert(timeRange(row1, row2, row3) == (f"The data spans from {row1.EPOCH} to {row3.EPOCH}"))
-    assert(timeRange(row1, row2, row3) != (f"The data spans from {row3.EPOCH} to {row4.EPOCH}"))
+    assert(timeRange([row1, row2, row3, row4]) == (f"The data spans from {row1.EPOCH} to {row4.EPOCH}"))
+    assert(timeRange([row1, row2, row3]) == (f"The data spans from {row1.EPOCH} to {row3.EPOCH}"))
+    assert(timeRange([row1, row2, row3]) != (f"The data spans from {row3.EPOCH} to {row4.EPOCH}"))
 def test_timeRange_exceptions():
     with pytest.raises(IndexError):
         timeRange([])
 
 def test_recentEpoch():
-    assert(recentEpoch(row1, row5) == (row1))
-    assert(recentEpoch(row3, row5) != (row5))
+    assert(recentEpoch([row1, row5]) == (row1))
+    assert(recentEpoch([row3, row5]) != (row5))
 
 def test_recentEpoch_exceptions():
     with pytest.raises(IndexError):
