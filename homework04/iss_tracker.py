@@ -1,6 +1,8 @@
 import requests
 import xmltodict
+from datetime import datetime, timezone
 from pydantic import BaseModel, Field, model_validator
+from math import sqrt
 
 
 class vectors(BaseModel):
@@ -24,9 +26,29 @@ def timeRange(NASA: list[vectors]) -> str:
     time_range = (f"The data spans from {firstEpoch} to {lastEpoch}")
     return time_range
 
-def fullEpoch(NASA: list[vectors]) -> vectors:
-    recentEpoch = NASA[len(NASA)-1]
-    return recentEpoch
+def recentEpoch(NASA: list[vectors]) -> vectors:
+    currentTime = datetime.now(timezone.utc)
+    bestIndex = 0
+    diff = abs(currentTime - datetime.strptime(NASA[0].EPOCH, "%Y-%jT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc))
+    ind = 0
+    for row in NASA:
+        epochDate = datetime.strptime(row.EPOCH, "%Y-%jT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc)
+        difference = abs(currentTime - epochDate)
+        if (difference<diff):
+            bestIndex = ind
+            diff = difference
+        ind += 1
+    return NASA[bestIndex]
+
+def calcSpeed(row: vectors) -> float:
+    speed = sqrt((row.X_DOT ** 2) + (row.Y_DOT ** 2) + (row.Z_DOT **2))
+    return speed
+
+def averageSpeed (NASA: list[vectors]) -> float:
+    sumSpeed = 0
+    for row in NASA:
+        sumSpeed += calcSpeed(row)
+    return (sumSpeed/len(NASA))
 
 def main():
     xml = requests.get(f"https://nasa-public-data.s3.amazonaws.com/iss-coords/current/ISS_OEM/ISS.OEM_J2K_EPH.xml")
@@ -35,6 +57,12 @@ def main():
     rows = data["ndm"]["oem"]["body"]["segment"]["data"]["stateVector"]
     NASA = [vectors(**row) for row in rows]
     print(timeRange(NASA))
+    recent = recentEpoch(NASA)
+    print(f"Closest epoch to now is: {recent}")
+    avgSpeed = averageSpeed(NASA)
+    print(f"Average speed over data is: {avgSpeed}")
+    instSpeed = calcSpeed(recent)
+    print(f"Instantaneous speed closest to now: {instSpeed}")
 
 if __name__ == '__main__':
     main()
