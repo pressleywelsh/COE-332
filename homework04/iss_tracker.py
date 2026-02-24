@@ -1,9 +1,12 @@
 import requests
 import xmltodict
+import logging
 from datetime import datetime, timezone
 from pydantic import BaseModel, Field, model_validator
 from math import sqrt
 
+
+logging.basicConfig(level=logging.INFO)
 
 class vectors(BaseModel):
     """
@@ -26,6 +29,7 @@ class vectors(BaseModel):
     @model_validator(mode="before")
     @classmethod
     def cleanUnits(cls, values):
+        logging.debug("Cleaning XML data")
         for key in ["X", "Y", "Z", "X_DOT", "Y_DOT", "Z_DOT"]:
             if isinstance(values.get(key), dict) and "#text" in values[key]:
                 values[key] = values[key]["#text"]
@@ -40,6 +44,10 @@ def timeRange(NASA: list[vectors]) -> str:
     Returns:
     time_range: string of data span
     """
+    logging.debug("Calculating time range of dataset")
+    if len(NASA) == 0:
+        logging.error("NASA dataset is empty")
+        return "No data available"
     firstEpoch = NASA[0].EPOCH
     lastEpoch = NASA[len(NASA)-1].EPOCH
     time_range = (f"The data spans from {firstEpoch} to {lastEpoch}")
@@ -55,6 +63,7 @@ def recentEpoch(NASA: list[vectors]) -> vectors:
     Returns:
     NASA[bestIndex]: vector with epoch closest to now
     """
+    logging.debug("Finding epoch closest to current time")
     currentTime = datetime.now(timezone.utc)
     bestIndex = 0
     diff = abs(currentTime - datetime.strptime(NASA[0].EPOCH, "%Y-%jT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc))
@@ -66,6 +75,7 @@ def recentEpoch(NASA: list[vectors]) -> vectors:
             bestIndex = ind
             diff = difference
         ind += 1
+    logging.debug(f"Closest epoch found at index {bestIndex}")
     return NASA[bestIndex]
 
 def calcSpeed(row: vectors) -> float:
@@ -78,6 +88,7 @@ def calcSpeed(row: vectors) -> float:
     Returns: 
     speed: speed found using speed equation
     """
+    logging.debug(f"Calculating speed for epoch {row.EPOCH}")
     speed = sqrt((row.X_DOT ** 2) + (row.Y_DOT ** 2) + (row.Z_DOT **2))
     return speed
 
@@ -91,6 +102,10 @@ def averageSpeed (NASA: list[vectors]) -> float:
     Returns: 
     avg: sum of speed divided by length of list to find average
     """
+    logging.debug("Calculating average speed over dataset")
+    if len(NASA) == 0:
+        logging.error("NASA dataset is empty")
+        return 0
     sumSpeed = 0
     for row in NASA:
         sumSpeed += calcSpeed(row)
@@ -98,11 +113,15 @@ def averageSpeed (NASA: list[vectors]) -> float:
     return (avg)
 
 def main():
+    logging.debug("Starting ISS tracker program")
     xml = requests.get(f"https://nasa-public-data.s3.amazonaws.com/iss-coords/current/ISS_OEM/ISS.OEM_J2K_EPH.xml")
     unsortedData = xml.text
     data = xmltodict.parse(unsortedData)
     rows = data["ndm"]["oem"]["body"]["segment"]["data"]["stateVector"]
     NASA = [vectors(**row) for row in rows]
+    if len(NASA) == 0:
+        logging.error("No state vectors loaded")
+        return 1
     print(timeRange(NASA))
     recent = recentEpoch(NASA)
     print(f"Closest epoch to now is: {recent}")
