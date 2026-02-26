@@ -1,0 +1,11 @@
+---
+
+services:
+    api:
+        build:
+            context: ./
+            dockerfile: ./Dockerfile
+        image: pressleywelsh524/coe332sp26-fastapi
+        container_name: api
+        ports:
+            - "8000:8000"
