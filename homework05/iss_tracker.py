@@ -4,6 +4,7 @@ import logging
 from datetime import datetime, timezone
 from pydantic import BaseModel, Field, model_validator
 from math import sqrt
+from fastapi import FastAPI, HTTPException
 
 
 logging.basicConfig(level=logging.INFO)
@@ -34,49 +35,22 @@ class vectors(BaseModel):
             if isinstance(values.get(key), dict) and "#text" in values[key]:
                 values[key] = values[key]["#text"]
         return values
-def timeRange(NASA: list[vectors]) -> str:
+
+app = FastAPI()
+
+def get_data():
     """
-    Determines the range that the ISS covers data over
-
-    Args: 
-    NASA: list of vectors
-
-    Returns:
-    time_range: string of data span
+    Fills dataset using requests
     """
-    logging.debug("Calculating time range of dataset")
-    if len(NASA) == 0:
-        logging.error("NASA dataset is empty")
-        return "No data available"
-    firstEpoch = NASA[0].EPOCH
-    lastEpoch = NASA[len(NASA)-1].EPOCH
-    time_range = (f"The data spans from {firstEpoch} to {lastEpoch}")
-    return time_range
+    logging.debug("Using requests to get data")
+    xml = requests.get(f"https://nasa-public-data.s3.amazonaws.com/iss-coords/current/ISS_OEM/ISS.OEM_J2K_EPH.xml")
+    unsortedData = xml.text
+    data = xmltodict.parse(unsortedData)
+    rows = data["ndm"]["oem"]["body"]["segment"]["data"]["stateVector"]
+    NASA = [vectors(**row) for row in rows]
+    return NASA
 
-def recentEpoch(NASA: list[vectors]) -> vectors:
-    """
-    Determines the vector that is closest to the current UTC time
-
-    Args: 
-    NASA: list of vectors
-
-    Returns:
-    NASA[bestIndex]: vector with epoch closest to now
-    """
-    logging.debug("Finding epoch closest to current time")
-    currentTime = datetime.now(timezone.utc)
-    bestIndex = 0
-    diff = abs(currentTime - datetime.strptime(NASA[0].EPOCH, "%Y-%jT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc))
-    ind = 0
-    for row in NASA:
-        epochDate = datetime.strptime(row.EPOCH, "%Y-%jT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc)
-        difference = abs(currentTime - epochDate)
-        if (difference<diff):
-            bestIndex = ind
-            diff = difference
-        ind += 1
-    logging.debug(f"Closest epoch found at index {bestIndex}")
-    return NASA[bestIndex]
+data = get_data()
 
 def calcSpeed(row: vectors) -> float:
     """
@@ -92,43 +66,54 @@ def calcSpeed(row: vectors) -> float:
     speed = sqrt((row.X_DOT ** 2) + (row.Y_DOT ** 2) + (row.Z_DOT **2))
     return speed
 
-def averageSpeed (NASA: list[vectors]) -> float:
+@app.get('/epochs')
+def epochRange(limit: int = None, offset: int = 0):
+    ind = 0
+    result = []
+    logging.debug("Sorting through vectors to find ones in given set")
+    for d in data:
+        if (ind>=offset):
+            result.append(d)
+            lim+=1
+        ind+=1
+        if (len(result) == limit):
+            return result
+    return result
+
+@app.get('/epochs/{EPOCH}')
+def get_epoch(EPOCH: str):
+    for d in data:
+        if d.EPOCH == EPOCH:
+            return d
+    raise HTTPException(status_code=404, detail=f"Did not find epoch {EPOCH}")
+
+@app.get('/epochs/{EPOCH}/speed')
+def get_speed(EPOCH: str):
+    for d in data: 
+        if d.EPOCH == EPOCH:
+            speed = calcSpeed(d)
+            return speed
+    raise HTTPException(status_code=404, detail=f"Did not find epoch {EPOCH}")
+            
+@app.get('/now')
+def recentEpoch() -> vectors:
     """
-    Computes average speed over the whole dataset
+    Determines the vector that is closest to the current UTC time
 
-    Args:
-    NASA: list of vectors
-
-    Returns: 
-    avg: sum of speed divided by length of list to find average
+    Returns:
+    data[bestIndex]: state vector with epoch closest to current time
     """
-    logging.debug("Calculating average speed over dataset")
-    if len(NASA) == 0:
-        logging.error("NASA dataset is empty")
-        return 0
-    sumSpeed = 0
-    for row in NASA:
-        sumSpeed += calcSpeed(row)
-    avg = sumSpeed/len(NASA)
-    return (avg)
-
-def main():
-    logging.debug("Starting ISS tracker program")
-    xml = requests.get(f"https://nasa-public-data.s3.amazonaws.com/iss-coords/current/ISS_OEM/ISS.OEM_J2K_EPH.xml")
-    unsortedData = xml.text
-    data = xmltodict.parse(unsortedData)
-    rows = data["ndm"]["oem"]["body"]["segment"]["data"]["stateVector"]
-    NASA = [vectors(**row) for row in rows]
-    if len(NASA) == 0:
-        logging.error("No state vectors loaded")
-        return 1
-    print(timeRange(NASA))
-    recent = recentEpoch(NASA)
-    print(f"Closest epoch to now is: {recent}")
-    avgSpeed = averageSpeed(NASA)
-    print(f"Average speed over data is: {avgSpeed}")
-    instSpeed = calcSpeed(recent)
-    print(f"Instantaneous speed closest to now: {instSpeed}")
-
-if __name__ == '__main__':
-    main()
+    logging.debug("Finding epoch closest to current time")
+    currentTime = datetime.now(timezone.utc)
+    bestIndex = 0
+    diff = abs(currentTime - datetime.strptime(data[0].EPOCH, "%Y-%jT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc))
+    ind = 0
+    for d in data:
+        epochDate = datetime.strptime(d.EPOCH, "%Y-%jT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc)
+        difference = abs(currentTime - epochDate)
+        if (difference<diff):
+            bestIndex = ind
+            diff = difference
+        ind += 1
+    logging.debug(f"Closest epoch found at index {bestIndex}")
+    return data[bestIndex]
