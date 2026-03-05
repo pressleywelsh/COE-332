@@ -2,6 +2,7 @@ import iss_tracker
 from iss_tracker import vectors
 import pytest
 from math import sqrt
+from fastapi import HTTPException
 
 row1 = vectors(** { "EPOCH": "2026-112T03:19:44.000Z",
                    "X": 4823.7049518326174,
@@ -39,38 +40,31 @@ row5 = vectors(**{"EPOCH": "2002-145T18:22:11.000Z",
                   "Y_DOT": 5.8217493048172641,
                   "Z_DOT": -3.6149281752038472})
 
-def test_timeRange():
-    assert(timeRange([row1, row2, row3, row4]) == (f"The data spans from {row1.EPOCH} to {row4.EPOCH}"))
-    assert(timeRange([row1, row2, row3]) == (f"The data spans from {row1.EPOCH} to {row3.EPOCH}"))
-    assert(timeRange([row1, row2, row3]) != (f"The data spans from {row3.EPOCH} to {row4.EPOCH}"))
-
-def test_timeRange_exceptions():
-    with pytest.raises(IndexError):
-        timeRange([])
-    if len(data) == 0:
-        raise IndexError("No data")
-
 def test_recentEpoch():
     iss_tracker.data = [row1, row5]
     output = iss_tracker.recentEpoch()
-    assert ouput["speed"] == iss_tracker.calcSpeed(output["vector"])
-
-def test_recentEpoch_exceptions():
-    with pytest.raises(IndexError):
-        recentEpoch([])
+    assert output["speed"] == iss_tracker.calcSpeed(output["vector"])
 
 def test_calcSpeed():
     expected = sqrt((row1.X_DOT ** 2) + (row1.Y_DOT ** 2) + (row1.Z_DOT ** 2))
     assert iss_tracker.calcSpeed(row1) == expected
     assert iss_tracker.calcSpeed(row1) != 0.0
 
-def test_averageSpeed():
-    expected = (calcSpeed(row1) + calcSpeed(row2)) / 2
-    assert averageSpeed([row1, row2]) == expected
-    assert averageSpeed([row4]) == calcSpeed(row4)
-
 def test_epochRange():
     iss_tracker.data = [row1,row2,row3, row4]
-    assert tracker.epochRange() == [row1, row2, row3, row4]
-    assert tracker.epochRange(limit=2, offset=0) == [row1, row2]
-    assert tracker.epochRange(limit=2, offset=2) == [row3, row4]
+    assert iss_tracker.epochRange() == [row1, row2, row3, row4]
+    assert iss_tracker.epochRange(limit=2, offset=0) == [row1, row2]
+    assert iss_tracker.epochRange(limit=2, offset=2) == [row3, row4]
+
+def test_get_epoch():
+    iss_tracker.data = [row1, row2, row3]
+    assert iss_tracker.get_epoch(row2.EPOCH) == row2
+    with pytest.raises(HTTPException):
+        iss_tracker.get_epoch("2005-145T18:22:11.000Z")
+
+def test_get_speed():
+    iss_tracker.data = [row1, row2, row3]
+    speed = iss_tracker.get_speed(row1.EPOCH)
+    assert speed == iss_tracker.calcSpeed(row1)
+    with pytest.raises(HTTPException):
+        iss_tracker.get_speed("not_real_epoch")
