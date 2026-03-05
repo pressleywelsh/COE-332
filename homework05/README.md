@@ -1,14 +1,14 @@
 # International Space Station Trajectory Data Analysis
-This project downloads an XML of ISS state vector data from NASA using the requests library, and represents it through a Pydantic model. It then analyzes it through various functions such as time range, velocity calculation, and instantaneous and average speed across the dataset. We used software engineering and design practices such as containerizing, logging, documenting, and unit testing.
+This project utilizes a FastAPI application to access ISS state vector data from NASA. It allows the user to retrieve epochs, use query parameters to retrieve parts of the dataset, and compute instantaneous speed. The application is containerized using docker to ensure reproducibility.
 
 ### Data
 The dataset is sourced from the NASA International Space Station Trajectory Data page: https://www.nasa.gov/spot-the-station/#TRAJECTORY 
-The project uses the XML Orbit Ephemeris Message which contains ISS state vectors at 4 minute intervals over 15 days. The iss_tracker.py downloads the xml through requests at runtime, so the data isn't in this repository.
+The project uses the XML Orbit Ephemeris Message which contains ISS state vectors at 4 minute intervals over 15 days. The iss_tracker.py retrieves the xml at runtime using the requests library.
 
 ### How to build and run a container
-To build the container you need to run: ``` docker build -t username/homework04:1.0 ./ ```
+To build the container you need to run: ``` docker build -t username/homework05:1.0 ./ ```
 In order to test if it built correctly you can run ``` docker images ``` to make sure it ran. 
-After this to run the container you should run: ``` docker run --rm -it username/homework04:1.0 /bin/bash ```
+After this to run the container you should run: ``` docker run --name "homework05" -d -p 8000:8000 username/homework05:1.0 ```
 To run the code, you run: ``` uv run iss_tracker.py ```
 To run the tests, you run: ``` uv run pytest ```
 
