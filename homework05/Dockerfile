@@ -15,7 +15,7 @@ RUN uv init /code
 # NOTE: The WORKDIR instruction sets the working directory for any RUN, CMD, ENTRYPOINT, COPY and ADD instructions that follow it in the Dockerfile
 WORKDIR /code
 
-RUN uv add pydantic pytest requests xmltodict
+RUN uv add fastapi uvicorn pydantic pytest requests xmltodict
 
 COPY test_iss_tracker.py /code/test_iss_tracker.py
 COPY iss_tracker.py /code/iss_tracker.py
