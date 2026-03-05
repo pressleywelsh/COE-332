@@ -21,3 +21,5 @@ COPY test_iss_tracker.py /code/test_iss_tracker.py
 COPY iss_tracker.py /code/iss_tracker.py
 
 ENV PATH="/code:$PATH"
+
+CMD ["uv", "run", "--", "fastapi", "dev", "--host", "0.0.0.0", "iss_tracker.py"]
