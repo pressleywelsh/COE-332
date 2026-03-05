@@ -119,7 +119,7 @@ def get_speed(EPOCH: str):
     EPOCH: requested timestamp
 
     Returns:
-    speed: calculated speed from function calcSpeed of vector with epoch closest to current time
+    speed: calculated speed from function calcSpeed of vector with epoch requested
     OR
     raises a 404 exception when epoch can't be found
     """
@@ -131,7 +131,7 @@ def get_speed(EPOCH: str):
     raise HTTPException(status_code=404, detail=f"Did not find epoch {EPOCH}")
             
 @app.get('/now')
-def recentEpoch() -> vectors:
+def recentEpoch() -> dict:
     """
     Determines the vector that is closest to the current UTC time
 
