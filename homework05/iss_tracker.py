@@ -42,12 +42,13 @@ def get_data():
     """
     Fills dataset using requests
     """
-    logging.debug("Using requests to get data")
+    logging.info("Requesting ISS data from NASA")
     xml = requests.get(f"https://nasa-public-data.s3.amazonaws.com/iss-coords/current/ISS_OEM/ISS.OEM_J2K_EPH.xml")
     unsortedData = xml.text
     data = xmltodict.parse(unsortedData)
     rows = data["ndm"]["oem"]["body"]["segment"]["data"]["stateVector"]
     NASA = [vectors(**row) for row in rows]
+    logging.info(f"Loaded {len(NASA)} state vectors")
     return NASA
 
 data = get_data()
@@ -68,13 +69,23 @@ def calcSpeed(row: vectors) -> float:
 
 @app.get('/epochs')
 def epochRange(limit: int = None, offset: int = 0):
+    """
+    Returns a list of state vectors
+
+    Query parameters:
+    limit: int of how many vectors to return
+    offset: int of where to start in the dataset
+
+    Returns:
+    result: list of all state vectors that match the parameters
+    """
+    logging.info(f"Epoch request received: limit={limit}, offset={offset}")
     ind = 0
     result = []
     logging.debug("Sorting through vectors to find ones in given set")
     for d in data:
         if (ind>=offset):
             result.append(d)
-            lim+=1
         ind+=1
         if (len(result) == limit):
             return result
@@ -82,6 +93,18 @@ def epochRange(limit: int = None, offset: int = 0):
 
 @app.get('/epochs/{EPOCH}')
 def get_epoch(EPOCH: str):
+    """
+    Returns the vector of the epoch requested
+    
+    Args:
+    EPOCH: requested timestamp
+
+    Returns: 
+    d: the state vector from the requested epoch
+    OR
+    raises a 404 exception when epoch can't be found
+    """
+    logging.debug(f"Searching for epoch {EPOCH}")
     for d in data:
         if d.EPOCH == EPOCH:
             return d
@@ -89,6 +112,18 @@ def get_epoch(EPOCH: str):
 
 @app.get('/epochs/{EPOCH}/speed')
 def get_speed(EPOCH: str):
+    """
+    Returns the speed from the vector of the epoch requested
+
+    Args:
+    EPOCH: requested timestamp
+
+    Returns:
+    speeed: calculated speed from function calcSpeed of vector with epoch closest to current time
+    OR
+    raises a 404 exception when epoch can't be found
+    """
+    logging.info(f"Speed requested for epoch {EPOCH}")
     for d in data: 
         if d.EPOCH == EPOCH:
             speed = calcSpeed(d)
@@ -116,4 +151,6 @@ def recentEpoch() -> vectors:
             diff = difference
         ind += 1
     logging.debug(f"Closest epoch found at index {bestIndex}")
-    return data[bestIndex]
+    now = data[bestIndex]
+    speed = calcSpeed(now)
+    return (f"Vector: {now} Speed: {speed}")
