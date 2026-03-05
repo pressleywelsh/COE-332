@@ -1,25 +1,20 @@
 FROM python:3.14
 
-# Download the latest installer
-ADD https://astral.sh/uv/install.sh /uv-installer.sh
+# COPY the uv binary
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-# Run the installer then remove it
-RUN sh /uv-installer.sh && rm /uv-installer.sh
+# Copy the project files
+RUN mkdir /app
+COPY pyproject.toml /app
+COPY .python-version /app
+COPY uv.lock /app
 
-# Ensure the installed binary is on the `PATH`
-ENV PATH="/root/.local/bin/:$PATH"
+# Sync the project into a new environment, asserting the lockfile is up to date
+WORKDIR /app
+RUN uv sync
 
-# Initialize a uv project
-RUN uv init /code
+# Add the actual app -- do this after syncing to preserve the cache
+COPY iss_tracker.py /app
+COPY test_iss_tracker.py /app
 
-# NOTE: The WORKDIR instruction sets the working directory for any RUN, CMD, ENTRYPOINT, COPY and ADD instructions that follow it in the Dockerfile
-WORKDIR /code
-
-RUN uv add fastapi uvicorn pydantic pytest requests xmltodict
-
-COPY test_iss_tracker.py /code/test_iss_tracker.py
-COPY iss_tracker.py /code/iss_tracker.py
-
-ENV PATH="/code:$PATH"
-
-CMD ["uv", "run", "--", "fastapi", "dev", "--host", "0.0.0.0", "iss_tracker.py"]
+CMD ["uv", "run", "--", "fastapi", "dev",  "--host", "0.0.0.0", "iss_tracker.py"]

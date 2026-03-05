@@ -1,0 +1,26 @@
+[project]
+name = "class-work"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "fastapi[standard]>=0.135.1",
+    "ipython>=9.10.0",
+    "pydantic>=2.12.5",
+    "pytest>=9.0.2",
+    "pyyaml>=6.0.3",
+    "requests>=2.32.5",
+    "uvicorn>=0.41.0",
+    "xmltodict>=1.0.2",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+]
+
+[tool.uv.workspace]
+members = [
+    "in-class/redis_test",
+]
