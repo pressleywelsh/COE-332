@@ -87,7 +87,7 @@ def epochRange(limit: int = None, offset: int = 0):
         if (ind>=offset):
             result.append(d)
         ind+=1
-        if (len(result) == limit):
+        if (len(result) == limit) and (limit is not None):
             return result
     return result
 
@@ -119,7 +119,7 @@ def get_speed(EPOCH: str):
     EPOCH: requested timestamp
 
     Returns:
-    speeed: calculated speed from function calcSpeed of vector with epoch closest to current time
+    speed: calculated speed from function calcSpeed of vector with epoch closest to current time
     OR
     raises a 404 exception when epoch can't be found
     """
@@ -153,4 +153,4 @@ def recentEpoch() -> vectors:
     logging.debug(f"Closest epoch found at index {bestIndex}")
     now = data[bestIndex]
     speed = calcSpeed(now)
-    return (f"Vector: {now} Speed: {speed}")
+    return {"vector": now, "speed": speed}
