@@ -25,4 +25,7 @@ def main():
     landings = [MeteoriteLanding(**ml) for ml in ml_data["meteorite_landings"]]
     for landing in landings:
         key = f"meteor:{landing.id}"
-        rd.set(key, json.dumps(landing.dict()))
+        rd.set(key, json.dumps(landing.model_dump()))
+
+if __name__ == "__main__":
+    main()
