@@ -45,12 +45,14 @@ def load_data() -> dict:
     Returns:
     dict: number of records loaded into Redis
     """
-    response = requests.get("https://www.kaggle.com/datasets/bushraqurban/world-health-indicators-dataset")
-    data = response.json()
+    response = requests.get("https://raw.githubusercontent.com/pressleywelsh/COE-332/refs/heads/main/homework06/world_health_data.csv?token=GHSAT0AAAAAADTE4CBHF4XVZNIH3LVQHPOA2ONWXIA")
+    
+    "I used AI in the following part in order to learn how to get my url from csv to json"
+    df = pd.read_csv(StringIO(response.text))
 
     count = 0
-    for row in data:
-        record = CountryData(**row)
+    for _, row in df.iterrows():
+        record = countryData(**row.to_dict())
         rd.set(f"{record.country_code}:{record.year}", record.model_dump_json())
         count += 1
 
