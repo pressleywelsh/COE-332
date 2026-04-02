@@ -39,6 +39,12 @@ def help():
 
 @app.post("/data")
 def load_data() -> dict:
+    """
+    Loads dataset into Redis database
+
+    Returns:
+    dict: number of records loaded into Redis
+    """
     response = requests.get("https://www.kaggle.com/datasets/bushraqurban/world-health-indicators-dataset")
     data = response.json()
 
@@ -52,6 +58,12 @@ def load_data() -> dict:
 
 @app.get("/data")
 def get_data() -> list:
+    """
+    Returns all data stored in Redis
+
+    Returns:
+    list: all country data records
+    """
     output = []
     for key in rd.keys():
         output.append(json.loads(rd.get(key)))
@@ -59,6 +71,12 @@ def get_data() -> list:
 
 @app.delete("/data")
 def delete_data() -> dict:
+    """
+    Deletes all data from Redis
+
+    Returns:
+    dict: number of records deleted
+    """
     keys = rd.keys()
     for key in keys:
         rd.delete(key)
@@ -66,6 +84,12 @@ def delete_data() -> dict:
 
 @app.get("/countries")
 def get_countries() -> list:
+    """
+    Returns all country_code:year keys in Redis
+
+    Returns:
+    list: all keys representing stored records
+    """
     output = []
     for key in rd.keys():
         output.append(key.decode("utf-8"))
@@ -73,11 +97,30 @@ def get_countries() -> list:
 
 @app.get("/countries/{country_code}/{year}")
 def get_country(country_code: str, year: int) -> dict:
+    """
+    Returns a specific country record for a given year
+
+    Args:
+    country_code: country abbreviation
+    year: year of data
+
+    Returns:
+    dict: country data for the specified year
+    """
     data = rd.get(f"{country_code}:{year}")
     return json.loads(data)
 
 @app.get("/countries/{country_code}")
 def get_country_all_years(country_code: str) -> list:
+    """
+    Returns all records for a given country across all years
+
+    Args:
+    country_code: country abbreviation
+
+    Returns:
+    list: all records for the given country
+    """
     output = []
     for key in rd.keys():
         key_str = key.decode("utf-8")
