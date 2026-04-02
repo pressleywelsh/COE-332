@@ -3,13 +3,13 @@ import requests
 import redis
 import json
 from fastapi import FastAPI
-import pandas as pd
-from io import StringIO
+import csv
+from typing import Optional
 
 app = FastAPI()
 
 def get_redis_client():
-    return redis.Redis(host='127.0.0.1', port=6379, db=0)
+    return redis.Redis(host='redis-db', port=6379, db=0)
 
 rd = get_redis_client()
 
@@ -17,15 +17,15 @@ class countryData(BaseModel):
     country: str
     country_code: str
     year: int
-    health_exp: float
-    life_expect: float
-    maternal_mortality: int
-    infant_mortality: float
-    neonatal_mortality: float
-    under_5_mortality: float
-    prev_hiv: float
-    inci_tuberc: float
-    prev_undernourishment: float
+    health_exp: Optional[float]
+    life_expect: Optional[float]
+    maternal_mortality: Optional[float]
+    infant_mortality: Optional[float]
+    neonatal_mortality: Optional[float]
+    under_5_mortality: Optional[float]
+    prev_hiv: Optional[float]
+    inci_tuberc: Optional[float]
+    prev_undernourishment: Optional[float]
 
 @app.get("/help")
 def help():
@@ -42,21 +42,37 @@ def help():
 @app.post("/data")
 def load_data() -> dict:
     """
-    Loads dataset into Redis database
+    Loads world health data from a local CSV file into the Redis database.
+
+    The CSV file is read from the project directory, cleaned to handle missing
+    values (empty strings are converted to None), and converted into Pydantic
+    countryData objects. Each record is stored in Redis using a key of the format
+    "country_code:year".
 
     Returns:
-    dict: number of records loaded into Redis
+    dict: A dictionary containing the total number of records loaded into Redis.
     """
-    response = requests.get("https://raw.githubusercontent.com/pressleywelsh/COE-332/main/homework06/world_health_data.csv")
-    
-    #I used AI in the following part in order to learn how to get my url from csv to json
-    df = pd.read_csv(StringIO(response.text))
 
-    count = 0
-    for _, row in df.iterrows():
-        record = countryData(**row.to_dict())
-        rd.set(f"{record.country_code}:{record.year}", record.model_dump_json())
-        count += 1
+    with open("world_health_data.csv", "r") as f:
+        count = 0
+
+    with open("world_health_data.csv", "r") as f:
+        reader = csv.DictReader(f)
+
+        for row in reader:
+            #Used AI to help with row below due to constant errors
+            clean_row = {
+                key: (value if value != "" else None)
+                for key, value in row.items()
+            }
+
+            record = countryData(**clean_row)
+
+            rd.set(
+                f"{record.country_code}:{record.year}",
+                record.model_dump_json()
+            )
+            count += 1
 
     return {"data_loaded": count}
 
