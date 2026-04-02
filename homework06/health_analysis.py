@@ -3,6 +3,8 @@ import requests
 import redis
 import json
 from fastapi import FastAPI
+import pandas as pd
+from io import StringIO
 
 app = FastAPI()
 
@@ -45,9 +47,9 @@ def load_data() -> dict:
     Returns:
     dict: number of records loaded into Redis
     """
-    response = requests.get("https://raw.githubusercontent.com/pressleywelsh/COE-332/refs/heads/main/homework06/world_health_data.csv?token=GHSAT0AAAAAADTE4CBHF4XVZNIH3LVQHPOA2ONWXIA")
+    response = requests.get("https://raw.githubusercontent.com/pressleywelsh/COE-332/main/homework06/world_health_data.csv")
     
-    "I used AI in the following part in order to learn how to get my url from csv to json"
+    #I used AI in the following part in order to learn how to get my url from csv to json
     df = pd.read_csv(StringIO(response.text))
 
     count = 0
