@@ -8,7 +8,7 @@ from pydantic import BaseModel
 import typing
 import os
 
-_redis_ip = os.environ.get("REDIS_HOST", "redis-db")
+_redis_ip = os.environ.get("REDIS_IP", "redis-db")
 _redis_port = 6379
 
 rd = redis.Redis(host=_redis_ip, port=_redis_port, db=0, decode_responses=True)
@@ -30,7 +30,6 @@ class Job(BaseModel):
     end_year: int
     start_time: typing.Optional[datetime] = None
     end_time: typing.Optional[datetime] = None
-    result: typing.Optional[str] = None
 
 
 def _generate_jid() -> str:

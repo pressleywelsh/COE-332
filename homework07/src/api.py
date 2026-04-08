@@ -5,8 +5,7 @@ import json
 from fastapi import FastAPI, HTTPException
 import csv
 from typing import Optional
-
-from jobs import add_job, get_job_by_id, get_job_ids
+from jobs import add_job, get_job_by_id, get_job_ids, Job
 
 app = FastAPI()
 
@@ -160,7 +159,7 @@ def get_country_all_years(country_code: str) -> list:
     return output
 
 @app.post("/jobs")
-def create_job(job: JobInput) -> dict:
+def create_job(job: JobInput) -> Job:
     """
     Creates a new job and adds it to the queue
     """
@@ -182,7 +181,6 @@ def create_job(job: JobInput) -> dict:
 
     return add_job(job.country_code, job.start_year, job.end_year)
 
-
 @app.get("/jobs")
 def list_all_jobs() -> list:
     """
@@ -190,9 +188,8 @@ def list_all_jobs() -> list:
     """
     return get_job_ids()
 
-
 @app.get("/jobs/{jobid}")
-def get_job(jobid: str) -> dict:
+def get_job(jobid: str) -> Job:
     """
     Returns job info for a specific job
     """
