@@ -1,5 +1,5 @@
-import time
-from jobs import q, start_job, update_job_status, JobStatus
+import json
+from jobs import q, rd, get_job_by_id, start_job, update_job_status, save_result, JobStatus
 
 
 @q.worker
@@ -7,6 +7,7 @@ def do_work(jid):
     """
     Processes job IDs
     """
+    start_job(jid)
     update_job_status(jid, JobStatus.RUNNING)
 
     keys = rd.keys()
@@ -48,5 +49,3 @@ def do_work(jid):
 
 
     update_job_status(jid, JobStatus.SUCCESS)
-
-do_work()
