@@ -183,3 +183,6 @@ Output:
   }
 }
 ```
+
+### Diagram
+<img width="635" height="273" alt="Diagram" src="https://github.com/user-attachments/assets/665c0604-ff38-4ebd-90ba-904c54db22f5" />
