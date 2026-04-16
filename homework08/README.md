@@ -29,25 +29,25 @@ To build and start the container you need to run: ``` docker compose up --build 
 To stop the container you need to run: ``` docker compose down ``` . 
 
 ### Routes
-``` GET /help ```
+- ``` GET /help ```
 Returns full list of routes.
-``` POST /data ```
+- ``` POST /data ```
 Loads data from the CSV into Redis as pydantic models.
-``` GET /data ```
+- ``` GET /data ```
 Returns all records in Redis.
-``` DELETE /data ```
+- ``` DELETE /data ```
 Deletes all records from Redis.
-``` GET /countries ```
+- ``` GET /countries ```
 Returns all keys in country_code:year format.
-``` GET /countries/{country_code}/{year} ```
+- ``` GET /countries/{country_code}/{year} ```
 Returns a record for a given country for a given year.
-``` GET /countries/{country_code} ```
+- ``` GET /countries/{country_code} ```
 Returns every year of data for a given country.
-``` POST /jobs ```
+- ``` POST /jobs ```
 Creates a new job using a country code and year range.
-``` GET /jobs ```
+- ``` GET /jobs ```
 Returns a list of all job IDs.
-``` GET /jobs/{jobid} ```
+- ``` GET /jobs/{jobid} ```
 Returns the information and status for a given job.
 
 ### Job System
