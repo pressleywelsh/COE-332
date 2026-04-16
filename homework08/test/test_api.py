@@ -57,3 +57,4 @@ def test_results():
 
     assert response.status_code == 404
     assert isinstance(response.json(), dict) == True
+
