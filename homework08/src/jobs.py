@@ -7,7 +7,10 @@ from enum import Enum
 from pydantic import BaseModel
 import typing
 import os
+import logging
 
+
+logging.basicConfig(level=logging.DEBUG)
 _redis_ip = os.environ.get("REDIS_IP", "redis-db")
 _redis_port = 6379
 
@@ -58,6 +61,7 @@ def _save_job(jid: str, job: Job) -> bool:
     Save a job object in the Redis database.
     """
     jdb.set(jid, json.dumps(job.model_dump(mode="json")))
+    logging.debug(f"Saved job {jid} to jobs database")
     return True
 
 def _queue_job(jid: str) -> bool:
@@ -65,17 +69,22 @@ def _queue_job(jid: str) -> bool:
     Add a job to the Redis queue.
     """
     q.put(jid)
+    logging.info(f"Queued job {jid}")
     return True
 
-def get_job_by_id(jid: str) -> Job:
+def get_job_by_id(jid: str) -> Job | None:
     """Return job object given jid."""
     raw_data = jdb.get(jid)
     if raw_data is None:
+        logging.warning(f"Job {jid} not found")
         return None
+
+    logging.debug(f"Retrieved job {jid}")
     return Job(**json.loads(raw_data))
 
 def get_job_ids() -> list[str]:
     """Return all job IDs"""
+    logging.debug(f"Retrieving all job ids")
     return jdb.keys()
 
 def add_job(country_code: str, start_year: int, end_year: int) -> Job:
@@ -84,6 +93,7 @@ def add_job(country_code: str, start_year: int, end_year: int) -> Job:
     job = _instantiate_job(jid, JobStatus.QUEUED, country_code, start_year, end_year)
     _save_job(jid, job)
     _queue_job(jid)
+    logging.info(f"Creating job for {country_code} from {start_year} to {end_year}")
     return job
 
 def start_job(jid: str) -> bool:
@@ -91,24 +101,28 @@ def start_job(jid: str) -> bool:
     start_time = datetime.now()
     job = get_job_by_id(jid)
     job.start_time = start_time
+    logging.info(f"Starting job {jid}")
     return _save_job(jid=jid, job=job)
 
 def update_job_status(jid: str, status: JobStatus) -> bool:
     """Update job status."""
     job = get_job_by_id(jid)
-    if job:
-        job.status = status
-        if job.status == JobStatus.ERROR or job.status == JobStatus.SUCCESS:
-            job.end_time = datetime.now()
-        return _save_job(jid, job)
-    else:
-        raise Exception()
+    logging.info(f"Updating job {jid} to status {status}")
+    if job is None:
+        logging.warning(f"Job {jid} not found")
+        return None
+    job.status = status
+    if job.status == JobStatus.ERROR or job.status == JobStatus.SUCCESS:
+        job.end_time = datetime.now()
+
+    return _save_job(jid, job)
 
 def save_result(jid: str, result: dict) -> bool:
     """
     Save a completed job result in the results Redis database.
     """
     rdb.set(jid, json.dumps(result))
+    logging.info(f"Saved result for job {jid}")
     return True
 
 def get_result(jid: str) -> typing.Optional[dict]:
@@ -117,5 +131,8 @@ def get_result(jid: str) -> typing.Optional[dict]:
     """
     raw_data = rdb.get(jid)
     if raw_data is None:
+        logging.warning(f"No result found for job {jid}")
         return None
+
+    logging.debug(f"Retrieved result for job {jid}")
     return json.loads(raw_data)
