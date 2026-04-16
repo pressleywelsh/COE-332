@@ -2,12 +2,6 @@ version = 1
 revision = 3
 requires-python = ">=3.14"
 
-[manifest]
-members = [
-    "class-work",
-    "redis-test",
-]
-
 [[package]]
 name = "annotated-doc"
 version = "0.0.4"
@@ -714,17 +708,6 @@ sdist = { url = "https://files.pythonhosted.org/packages/e9/31/1476f206482dd9bc5
 wheels = [
     { url = "https://files.pythonhosted.org/packages/ca/98/1dd1a5c060916cf21d15e67b7d6a7078e26e2605d5c37cbc9f4f5454c478/redis-7.2.1-py3-none-any.whl", hash = "sha256:49e231fbc8df2001436ae5252b3f0f3dc930430239bfeb6da4c7ee92b16e5d33", size = 396057, upload-time = "2026-02-25T20:05:16.533Z" },
 ]
-
-[[package]]
-name = "redis-test"
-version = "0.1.0"
-source = { virtual = "in-class/redis_test" }
-dependencies = [
-    { name = "redis" },
-]
-
-[package.metadata]
-requires-dist = [{ name = "redis", specifier = ">=7.2.1" }]
 
 [[package]]
 name = "requests"

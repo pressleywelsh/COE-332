@@ -102,7 +102,7 @@ def start_job(jid: str) -> bool:
     job = get_job_by_id(jid)
     if job is None:
         logging.warning(f"Job {jid} not found")
-    return False
+        return False
     job.start_time = start_time
     logging.info(f"Starting job {jid}")
     return _save_job(jid=jid, job=job)

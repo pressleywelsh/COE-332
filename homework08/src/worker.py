@@ -87,3 +87,6 @@ def do_work(jid: str) -> None:
 
     update_job_status(jid, JobStatus.SUCCESS)
     logging.info(f"Job {jid} completed successfully")
+
+if __name__ == "__main__":
+    do_work()
