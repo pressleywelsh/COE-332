@@ -100,11 +100,14 @@ def start_job(jid: str) -> bool:
     """Called by worker when starting a new job. Updates start time."""
     start_time = datetime.now()
     job = get_job_by_id(jid)
+    if job is None:
+        logging.warning(f"Job {jid} not found")
+    return False
     job.start_time = start_time
     logging.info(f"Starting job {jid}")
     return _save_job(jid=jid, job=job)
 
-def update_job_status(jid: str, status: JobStatus) -> bool:
+def update_job_status(jid: str, status: JobStatus) -> bool | None:
     """Update job status."""
     job = get_job_by_id(jid)
     logging.info(f"Updating job {jid} to status {status}")
