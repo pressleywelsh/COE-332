@@ -4,9 +4,12 @@ import redis
 import json
 from fastapi import FastAPI, HTTPException
 import csv
+import logging
+import os
 from typing import Optional
 from jobs import add_job, get_job_by_id, get_job_ids, Job, get_result
 
+logging.basicConfig(level=logging.DEBUG)
 app = FastAPI()
 
 def get_redis_client():
@@ -63,6 +66,8 @@ def load_data() -> dict:
     dict: A dictionary containing the total number of records loaded into Redis.
     """
 
+    logging.info("Starting data load")
+
     with open("world_health_data.csv", "r") as f:
         count = 0
 
@@ -84,6 +89,8 @@ def load_data() -> dict:
             )
             count += 1
 
+    logging.info(f"Loaded {count} records into Redis")
+
     return {"data_loaded": count}
 
 @app.get("/data")
@@ -94,6 +101,7 @@ def get_data() -> list:
     Returns:
     list: all country data records
     """
+    logging.debug("Getting all data from Redis")
     output = []
     for key in rd.keys():
         output.append(json.loads(rd.get(key)))
@@ -108,6 +116,7 @@ def delete_data() -> dict:
     dict: number of records deleted
     """
     keys = rd.keys()
+    logging.warning(f"Deleting {len(keys)} records from Redis")
     for key in keys:
         rd.delete(key)
     return {"data_deleted": len(keys)}
@@ -137,7 +146,13 @@ def get_country(country_code: str, year: int) -> dict:
     Returns:
     dict: country data for the specified year
     """
+    logging.debug(f"Looking up {country_code}:{year}")
     data = rd.get(f"{country_code}:{year}")
+    
+    if data is None:
+        logging.error(f"Did not find record {country_code}:{year}")
+        raise HTTPException(status_code=404, detail=f"Did not find record {country_code}:{year}")
+
     return json.loads(data)
 
 @app.get("/countries/{country_code}")
@@ -167,6 +182,11 @@ def create_job(job: JobInput) -> Job:
     if job.start_year > job.end_year:
         raise HTTPException(status_code=400, detail="start_year must be <= end_year")
 
+    logging.info(f"Received job request: country_code={job.country_code}, "f"start_year={job.start_year}, end_year={job.end_year}")
+
+    if (job.start_year>job.end_year):
+        logging.error("start_year must be <= end_year")
+
     found = False
     for key in rd.keys():
         key_str = key.decode("utf-8")
@@ -175,6 +195,8 @@ def create_job(job: JobInput) -> Job:
             if job.start_year <= year <= job.end_year:
                 found = True
                 break
+    if (found == False):
+        logging.warning("No matching data for given parameters")
 
     if not found:
         raise HTTPException(status_code=400, detail="No matching data for given parameters")
@@ -193,6 +215,7 @@ def get_job(jobid: str) -> Job:
     """
     Returns job info for a specific job
     """
+    logging.debug(f"Fetching job {jobid}")
     job = get_job_by_id(jobid)
 
     if job is None:
@@ -202,7 +225,12 @@ def get_job(jobid: str) -> Job:
 
 @app.get("/results/{jobid}")
 def get_results(jobid: str) -> dict:
+    """
+    Returns the result for given job id
+    """
+    logging.debug(f"Fetching job result for {jobid}")
     job = get_job_by_id(jobid)
+
     if job is None:
         raise HTTPException(status_code=404, detail=f"Did not find job {jobid}")
 
