@@ -144,9 +144,7 @@ Output:
 
 Submit a Job:
 ```
-curl localhost:5000/jobs -X POST \
--H "Content-Type: application/json" \
--d '{"country_code":"USA","start_year":2000,"end_year":2010}'
+curl localhost:5000/jobs -X POST -d '{"country_code":"USA","start_year":2000,"end_year":2010}' -H "Content-Type: application/json"
 ```
 
 Output:
