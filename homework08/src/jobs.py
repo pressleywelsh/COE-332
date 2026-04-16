@@ -71,7 +71,7 @@ def get_job_by_id(jid: str) -> Job:
     """Return job object given jid."""
     raw_data = jdb.get(jid)
     if raw_data is None:
-        raise Exception("Job not found")
+        return None
     return Job(**json.loads(raw_data))
 
 def get_job_ids() -> list[str]:

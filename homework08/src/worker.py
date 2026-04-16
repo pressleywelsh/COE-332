@@ -45,7 +45,7 @@ def do_work(jid: str) -> None:
     life_vals = []
     for key in keys:
         check = rd.get(key)
-        if raw is None:
+        if check is None:
             logging.warning(f"Skipping empty record for key {key}")
             continue
 
@@ -81,7 +81,6 @@ def do_work(jid: str) -> None:
     logging.debug(f"Max life expectancy: {max_life_expect}")
         
     result = { "country_code": country, "start_year": start, "end_year": end, "count": len(matches), "min_life_expect": min_life_expect, "max_life_expect": max_life_expect, "avg_health_exp": avghealthexp}
-    # compute averages or summary
     
     save_result(jid, result)
     logging.info(f"Saved result for job {jid}")

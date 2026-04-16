@@ -5,7 +5,7 @@ import json
 from fastapi import FastAPI, HTTPException
 import csv
 from typing import Optional
-from jobs import add_job, get_job_by_id, get_job_ids, Job
+from jobs import add_job, get_job_by_id, get_job_ids, Job, get_result
 
 app = FastAPI()
 
@@ -196,6 +196,17 @@ def get_job(jobid: str) -> Job:
     job = get_job_by_id(jobid)
 
     if job is None:
-        raise HTTPException(status_code=404, detail="Job not found")
+        raise HTTPException(status_code=404, detail=f"Did not find job {jobid}")
 
     return job
+
+@app.get("/results/{jobid}")
+def get_results(jobid: str) -> dict:
+    job = get_job_by_id(jobid)
+    if job is None:
+        raise HTTPException(status_code=404, detail=f"Did not find job {jobid}")
+
+    result = get_result(jobid)
+    if result is None: 
+        raise HTTPException(status_code=404, detail="Job not finished")
+    return result
