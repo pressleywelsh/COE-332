@@ -166,6 +166,8 @@ def get_country_all_years(country_code: str) -> list:
     Returns:
     list: all records for the given country
     """
+    logging.debug(f"Fetching all records for country {country_code}")
+
     output = []
     for key in rd.keys():
         key_str = key.decode("utf-8")
@@ -179,13 +181,9 @@ def create_job(job: JobInput) -> Job:
     Creates a new job and adds it to the queue
     """
 
+    logging.info(f"Received job request: country_code={job.country_code}, "f"start_year={job.start_year}, end_year={job.end_year}")
     if job.start_year > job.end_year:
         raise HTTPException(status_code=400, detail="start_year must be <= end_year")
-
-    logging.info(f"Received job request: country_code={job.country_code}, "f"start_year={job.start_year}, end_year={job.end_year}")
-
-    if (job.start_year>job.end_year):
-        logging.error("start_year must be <= end_year")
 
     found = False
     for key in rd.keys():
