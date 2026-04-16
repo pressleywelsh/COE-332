@@ -17,7 +17,8 @@ services:
         ports:
             - 5000:5000
         environment:
-            REDIS_IP: redis-db
+            REDIS_IP: redis-db 
+            PYTHONPATH: /app/src #used ai for this line
         command: ["uv", "run", "--", "fastapi", "dev", "--host", "0.0.0.0", "--port", "5000", "src/api.py"]
 
     worker:
@@ -28,4 +29,5 @@ services:
             - redis-db
         environment:
             REDIS_IP: redis-db
+            PYTHONPATH: /app/src #used ai for this line
         command: ["uv", "run", "python", "src/worker.py"]

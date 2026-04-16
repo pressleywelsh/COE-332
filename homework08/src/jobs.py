@@ -34,6 +34,7 @@ class Job(BaseModel):
     end_year: int
     start_time: typing.Optional[datetime] = None
     end_time: typing.Optional[datetime] = None
+    model_config = {"use_enum_values": True} #used ai here to fix warning from pytest
 
 
 def _generate_jid() -> str:
