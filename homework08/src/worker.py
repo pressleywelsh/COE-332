@@ -1,4 +1,4 @@
-import jsonstart_job(jid)
+import json
 import logging
 import os
 from jobs import q, rd, get_job_by_id, start_job, update_job_status, save_result, JobStatus
@@ -7,7 +7,7 @@ from jobs import q, rd, get_job_by_id, start_job, update_job_status, save_result
 logging.basicConfig(level=logging.DEBUG)
 
 @q.worker
-def do_work(jid):
+def do_work(jid: str) -> None:
     """
     Process a job ids and perform data analysis.
 
@@ -44,7 +44,17 @@ def do_work(jid):
     count=0
     life_vals = []
     for key in keys:
-        record = json.loads(rd.get(key))
+        check = rd.get(key)
+        if raw is None:
+            logging.warning(f"Skipping empty record for key {key}")
+            continue
+
+        try:
+            record = json.loads(check)
+        except json.JSONDecodeError:
+            logging.warning(f"Skipping invalid JSON for key {key}")
+            continue
+        
         if (record["country_code"] == country) and (record["year"] >= start) and (record["year"] <=end):
             matches.append(record)
             logging.debug(f"Match found for job {jid}: {record}")
