@@ -8,15 +8,18 @@ This project utilizes a FastAPI application that allows the user to load, store,
 - HotQueue: queue for processing jobs asynchronously
 
 ### Structure
-Dockerfile: Has everything necessary to build and run docker image which runs the FastAPI application
-docker-compose.yml: defines and run containers
-api.py: FastAPI app that loads, stores, and retrieves world health data and handles job requests
-jobs.py: handles job creation, storage, and queueing using Redis
-worker.py: processes jobs from the queue and updates their status
-world_health_data.csv: dataset used to fill database
-pyproject.toml: provides standards for configuring
-uv.lock: contains all uv dependencies
-.python-version: contains version of python to use
+- Dockerfile: Has everything necessary to build and run docker image which runs the FastAPI application 
+- docker-compose.yml: defines and run containers 
+- api.py: FastAPI app that loads, stores, and retrieves world health data and handles job requests 
+- jobs.py: handles job creation, storage, and queueing using Redis 
+- worker.py: processes jobs from the queue and updates their status 
+- world_health_data.csv: dataset used to fill database 
+- pyproject.toml: provides standards for configuring 
+- uv.lock: contains all uv dependencies 
+- .python-version: contains version of python to use 
+- test/test_api.py: tests fastAPI routes and responses
+- test/test_jobs.py: tests posting a job, getting a job, getting status, and testing results
+- test/test_worker.py: tests worker and how it processes a job
 
 ### Data
 The dataset is sourced from Kaggle: https://www.kaggle.com/datasets/bushraqurban/world-health-indicators-dataset.
