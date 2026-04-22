@@ -2,29 +2,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app-test-deployment-fastapi
+  name: app-test-deployment-worker
   labels:
-    app: fastapi-test
+    app: worker-test
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: fastapi-test
+      app: worker-test
   template:
     metadata:
       labels:
-        app: fastapi-test
+        app: worker-test
     spec:
       containers:
-        - name: fastapi
+        - name: worker
           image: pressleywelsh/final-project:latest
           imagePullPolicy: Always
-          ports:
-            - containerPort: 5000
           env:
             - name: REDIS_IP
               value: app-test-service-redis
             - name: PYTHONPATH
               value: /app/src
-          command:
-            ["uv", "run", "--", "fastapi", "dev", "--host", "0.0.0.0", "--port", "5000", "src/FastAPI_api.py"]
+          command: ["uv", "run", "python", "src/worker.py"]

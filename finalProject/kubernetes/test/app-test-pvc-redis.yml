@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: app-prod-pvc-redis
+  name: app-test-pvc-redis
 spec:
   accessModes:
     - ReadWriteOnce

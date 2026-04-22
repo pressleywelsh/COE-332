@@ -2,18 +2,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: app-prod-deployment-redis
+  name: app-test-deployment-redis
   labels:
-    app: redis-prod
+    app: redis-test
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: redis-prod
+      app: redis-test
   template:
     metadata:
       labels:
-        app: redis-prod
+        app: redis-test
     spec:
       containers:
         - name: redis
@@ -28,4 +28,4 @@ spec:
       volumes:
         - name: redis-data
           persistentVolumeClaim:
-            claimName: app-prod-pvc-redis
+            claimName: app-test-pvc-redis
