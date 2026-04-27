@@ -19,6 +19,8 @@ def get_redis_client():
 
 rd = get_redis_client()
 
+VALID_YEARS = {2015, 2016, 2017, 2018, 2019}
+
 class countryData(BaseModel):
     country: str
     country_code: str
@@ -77,6 +79,9 @@ def load_data() -> dict:
         reader = csv.DictReader(f)
 
         for row in reader:
+            if int(row["year"]) not in VALID_YEARS:
+                continue
+
             #Used AI to help with row below due to constant errors
             clean_row = {
                 key: (value if value != "" else None)
@@ -147,6 +152,9 @@ def get_year_data(year: int) -> list[dict]:
     Returns:
         list: all country data for the specified year
     """
+    if year not in VALID_YEARS:
+        raise HTTPException(status_code=400, detail=f"Invalid year. Valid years are {sorted(VALID_YEARS)}")
+
     logging.debug(f"Looking up all countries for year {year}")
     output = []
 
@@ -175,6 +183,9 @@ def get_country(country_code: str, year: int) -> dict:
     Returns:
     dict: country data for the specified year
     """
+    if year not in VALID_YEARS:
+        raise HTTPException(status_code=404, detail=f"Invalid year. Valid years are {sorted(VALID_YEARS)}")
+
     logging.debug(f"Looking up {country_code}:{year}")
     data = rd.get(f"{country_code}:{year}")
     
@@ -211,6 +222,9 @@ def create_job(job: JobInput) -> Job:
     """
 
     logging.info(f"Received job request: country_code={job.country_code}, "f"start_year={job.start_year}, end_year={job.end_year}")
+    if job.start_year not in VALID_YEARS or job.end_year not in VALID_YEARS:
+        raise HTTPException(status_code=404, detail=f"start_year and end_year must be valid years: {sorted(VALID_YEARS)}")
+
     if job.start_year > job.end_year:
         raise HTTPException(status_code=400, detail="start_year must be <= end_year")
 
