@@ -83,10 +83,6 @@ def do_work(jid: str) -> None:
     logging.debug(f"Min life expectancy: {min_life_expect}")
     logging.debug(f"Max life expectancy: {max_life_expect}")
     
-    correlation = None
-    if len(x_values) > 1:
-        correlation = np.corrcoef(x_values, y_values)[0, 1]
-    
     x_values = []
     y_values = []
 
@@ -99,13 +95,17 @@ def do_work(jid: str) -> None:
         m, b = np.polyfit(x_values, y_values, 1)
         plt.plot(x_values, [m*x + b for x in x_values])
 
+    correlation = None
+    if len(x_values) > 1:
+        correlation = np.corrcoef(x_values, y_values)[0, 1]
+
     plt.scatter(x_values, y_values)
     plt.xlabel('Health Expenditure')
     plt.ylabel('Life Expectancy')
-    plt.title(f'Health Expenditure vs Life Expectancy ({country})')
+    plt.title(f'Life Expectancy vs Health Expenditure ({country} from {start}-{end})')
     plt.savefig('/output_image.png')
 
-     result = { "country_code": country, "start_year": start, "end_year": end, "count": len(matches), "correlation": correlation, "min_life_expect": min_life_expect, "max_life_expect": max_life_expect, "avg_health_exp": avghealthexp}
+    result = {"country_code": country, "start_year": start, "end_year": end, "count": len(matches), "correlation": correlation, "min_life_expect": min_life_expect, "max_life_expect": max_life_expect, "avg_health_exp": avghealthexp}
 
     save_result(jid, result)
 
