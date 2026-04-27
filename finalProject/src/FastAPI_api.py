@@ -15,7 +15,7 @@ logging.basicConfig(level=logging.DEBUG)
 app = FastAPI()
 
 def get_redis_client():
-    return redis.Redis(host='redis-db', port=6379, db=0)
+    return redis.Redis(host=os.environ.get("REDIS_IP", "redis-db"), port=6379, db=0)
 
 rd = get_redis_client()
 
