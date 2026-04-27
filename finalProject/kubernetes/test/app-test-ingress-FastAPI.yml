@@ -6,6 +6,7 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
+  ingressClassName: nginx
   rules:
     - host: pressleywelsh524.coe332.tacc.cloud
       http:

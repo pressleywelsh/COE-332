@@ -1,7 +1,8 @@
 import json
 import logging
 import os
-from jobs import q, rd, get_job_by_id, start_job, update_job_status, save_result, JobStatus
+import matplotlib.pyplot as plt
+from jobs import q, rd, results, get_job_by_id, start_job, update_job_status, save_result, JobStatus
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -79,14 +80,36 @@ def do_work(jid: str) -> None:
     logging.debug(f"Average health expenditure: {avghealthexp}")
     logging.debug(f"Min life expectancy: {min_life_expect}")
     logging.debug(f"Max life expectancy: {max_life_expect}")
-        
+    
     result = { "country_code": country, "start_year": start, "end_year": end, "count": len(matches), "min_life_expect": min_life_expect, "max_life_expect": max_life_expect, "avg_health_exp": avghealthexp}
     
+    x_values = []
+    y_values = []
+
+    for record in matches:
+        if record["life_expect"] is not None:
+            x_values.append(record["year"])
+            y_values.append(record["life_expect"])
+
+    plt.plot(x_values, y_values, 'b-o')
+    plt.xlabel('Year')
+    plt.ylabel('Life Expectancy')
+    plt.title(f'Life Expectancy for {country}')
+    plt.savefig('/output_image.png')
+
+    with open('/output_image.png', 'rb') as f:
+        img = f.read()
+
     save_result(jid, result)
-    logging.info(f"Saved result for job {jid}")
+    with open('/output_image.png', 'rb') as f:
+        img = f.read()
+
+    results.hset(jid, 'image', img)
 
     update_job_status(jid, JobStatus.SUCCESS)
     logging.info(f"Job {jid} completed successfully")
+
+
 
 if __name__ == "__main__":
     do_work()

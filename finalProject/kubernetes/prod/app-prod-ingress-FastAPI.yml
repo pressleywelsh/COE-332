@@ -6,14 +6,15 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
 spec:
+  ingressClassName: nginx
   rules:
     - host: pressleywelsh524.coe332.tacc.cloud
       http:
         paths:
-          - path: /
-            pathType: Prefix
+          - pathType: Prefix
+            path: "/"
             backend:
               service:
-                name: app-prod-service-nodeport-fastapi
+                name: app-prod-service-fastapi
                 port:
                   number: 5000

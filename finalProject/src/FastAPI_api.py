@@ -48,7 +48,9 @@ def help():
             "/countries/{country_code}/{year} GET": "return one record",
             "/jobs POST": "submit a job",
             "/jobs GET": "list all jobs",
-            "/jobs/{jobid} GET": "get job info"
+            "/jobs/{jobid} GET": "get job info",
+            "/countries/{country_code} GET": "return all records for one country",
+            "/results/{jobid} GET": "get job result"
         }
     }
 
@@ -68,9 +70,7 @@ def load_data() -> dict:
 
     logging.info("Starting data load")
 
-    with open("world_health_data.csv", "r") as f:
-        count = 0
-
+    count = 0
     with open("world_health_data.csv", "r") as f:
         reader = csv.DictReader(f)
 
@@ -132,6 +132,33 @@ def get_countries() -> list:
     output = []
     for key in rd.keys():
         output.append(key.decode("utf-8"))
+    return output
+
+@app.get('/countries/year/{year}')
+def get_year_data(year: int) -> list[dict]:
+    """
+    Returns all country records for one year.
+
+    Args:
+        year: year of data
+
+    Returns:
+        list: all country data for the specified year
+    """
+    logging.debug(f"Looking up all countries for year {year}")
+    output = []
+
+    for key in rd.keys():
+        key = key.decode("utf-8")
+        country_code, record_year = key.split(":")
+
+        if int(record_year) == year:
+            raw_data = rd.get(key)
+            output.append(json.loads(raw_data))
+
+    if len(output) == 0:
+        raise HTTPException(status_code=404, detail=f"No data found for year {year}")
+
     return output
 
 @app.get("/countries/{country_code}/{year}")

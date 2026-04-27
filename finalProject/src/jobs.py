@@ -139,4 +139,5 @@ def get_result(jid: str) -> typing.Optional[dict]:
         return None
 
     logging.debug(f"Retrieved result for job {jid}")
+
     return json.loads(raw_data)
