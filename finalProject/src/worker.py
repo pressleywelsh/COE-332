@@ -17,8 +17,8 @@ def do_work(jid: str) -> None:
     - Marks the job as started and updates its status to running
     - Retrieves data from Redis
     - Filters through data for ones  matching the country code and in the year range
-    - Computes summary statistics: total number of matching records, average health expenditure, minimum and maximum life expectancy
-    - Saves the result to the results database
+    - Computes summary statistics: total number of matching records, average health expenditure, minimum and maximum life expectancy, correlation of life expectancy vs health expenditure
+    - Saves the result and plot of life expectancy vs health expenditure to the results database
     - Updates the job status to success
 
     Args:
@@ -83,7 +83,9 @@ def do_work(jid: str) -> None:
     logging.debug(f"Min life expectancy: {min_life_expect}")
     logging.debug(f"Max life expectancy: {max_life_expect}")
     
-    result = { "country_code": country, "start_year": start, "end_year": end, "count": len(matches), "min_life_expect": min_life_expect, "max_life_expect": max_life_expect, "avg_health_exp": avghealthexp}
+    correlation = None
+    if len(x_values) > 1:
+        correlation = np.corrcoef(x_values, y_values)[0, 1]
     
     x_values = []
     y_values = []
@@ -102,6 +104,8 @@ def do_work(jid: str) -> None:
     plt.ylabel('Life Expectancy')
     plt.title(f'Health Expenditure vs Life Expectancy ({country})')
     plt.savefig('/output_image.png')
+
+     result = { "country_code": country, "start_year": start, "end_year": end, "count": len(matches), "correlation": correlation, "min_life_expect": min_life_expect, "max_life_expect": max_life_expect, "avg_health_exp": avghealthexp}
 
     save_result(jid, result)
 
