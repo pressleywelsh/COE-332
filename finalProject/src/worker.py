@@ -2,6 +2,7 @@ import json
 import logging
 import os
 import matplotlib.pyplot as plt
+import numpy as np
 from jobs import q, rd, rdb, results, get_job_by_id, start_job, update_job_status, save_result, JobStatus
 
 
@@ -88,14 +89,18 @@ def do_work(jid: str) -> None:
     y_values = []
 
     for record in matches:
-        if record["life_expect"] is not None:
-            x_values.append(record["year"])
+        if record["health_exp"] is not None and record["life_expect"] is not None:
+            x_values.append(record["health_exp"])
             y_values.append(record["life_expect"])
 
-    plt.plot(x_values, y_values, 'b-o')
-    plt.xlabel('Year')
+    if len(x_values) > 1:
+        m, b = np.polyfit(x_values, y_values, 1)
+        plt.plot(x_values, [m*x + b for x in x_values])
+
+    plt.scatter(x_values, y_values)
+    plt.xlabel('Health Expenditure')
     plt.ylabel('Life Expectancy')
-    plt.title(f'Life Expectancy for {country}')
+    plt.title(f'Health Expenditure vs Life Expectancy ({country})')
     plt.savefig('/output_image.png')
 
     save_result(jid, result)
