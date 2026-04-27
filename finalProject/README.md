@@ -3,9 +3,17 @@ This project utilizes a FastAPI application that allows the user to load, store,
 
 ### Tools Used
 - FastAPI: framework used to set up a RESTful API using routes
-- REDIS: database used to store data 
+- REDIS: database used to store data
 - Docker: used to containerize the application for replication
 - HotQueue: queue for processing jobs asynchronously
+
+### Redis Database Usages
+This project uses Redis for:
+
+- Raw Data Database: stores all health records
+- Jobs Database: stores job data and statuses
+- Queue (HotQueue): manages asynchronous job execution
+- Results Database: stores generated plots and results
 
 ### Structure
 - Dockerfile: Has everything necessary to build and run docker image which runs the FastAPI application 
@@ -27,9 +35,33 @@ The data is accessed locally from a csv file and loaded into Redis.
 Each country record includes: country, country_code, year, health_exp, life_expect, maternal_mortality, infant_mortality, neonatal_mortality, under_5_mortality, prev_hiv, inci_tuberc, and prev_undernourishment.
 Any missing fields are converted to None and then fed into the model.
 
-### How to build and run a container
+### How to build and run a container on docker
 To build and start the container you need to run: ``` docker compose up --build ``` .
 To stop the container you need to run: ``` docker compose down ``` . 
+
+### How to run on Kubernetes
+Apply the pods to create them:
+kubectl apply -f kubernetes/prod/
+kubectl apply -f kubernetes/test/
+
+Check pods:
+kubectl get pods
+
+Check services:
+kubectl get services
+
+Check ingress:
+kubectl get ingress
+
+The is application is available at:
+http://pressleywelsh524.coe332.tacc.cloud
+
+### Using application at a public endpoint
+After completing the steps above, the API is accessible at:
+http://pressleywelsh524.coe332.tacc.cloud
+
+Example:
+curl http://pressleywelsh524.coe332.tacc.cloud/data
 
 ### Routes
 - ``` GET /help ```
@@ -62,6 +94,8 @@ When a job is submitted:
 - The job ID is placed into the queue
 - A worker retrieves the job from the queue
 - The worker updates the job status from QUEUED to RUNNING to FINISHED
+- Generates a plot
+- Stores the plot image in results database
 
 ### Running Locally
 Ensure Docker is installed, then run:
