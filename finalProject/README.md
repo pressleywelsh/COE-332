@@ -25,7 +25,7 @@ This project uses Redis for:
 - pyproject.toml: provides standards for configuring 
 - uv.lock: contains all uv dependencies 
 - .python-version: contains version of python to use 
-- test/test_api.py: tests fastAPI routes and responses
+- test/test_FastAPI_api.py: tests fastAPI routes and responses
 - test/test_jobs.py: tests posting a job, getting a job, getting status, and testing results
 - test/test_worker.py: tests worker and how it processes a job
 
