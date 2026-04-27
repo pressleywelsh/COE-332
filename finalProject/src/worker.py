@@ -15,7 +15,7 @@ def do_work(jid: str) -> None:
     This function:
     - Marks the job as started and updates its status to running
     - Retrieves data from Redis
-    - Filters through data for ones matching the country code and in the year range
+    - Filters through data for ones  matching the country code and in the year range
     - Computes summary statistics: total number of matching records, average health expenditure, minimum and maximum life expectancy
     - Saves the result to the results database
     - Updates the job status to success
@@ -58,6 +58,7 @@ def do_work(jid: str) -> None:
         
         if (record["country_code"] == country) and (record["year"] >= start) and (record["year"] <=end):
             matches.append(record)
+
             logging.debug(f"Match found for job {jid}: {record}")
             if record["health_exp"] is not None:
                 total += record["health_exp"]

@@ -184,7 +184,7 @@ def get_country(country_code: str, year: int) -> dict:
     dict: country data for the specified year
     """
     if year not in VALID_YEARS:
-        raise HTTPException(status_code=404, detail=f"Invalid year. Valid years are {sorted(VALID_YEARS)}")
+        raise HTTPException(status_code=400, detail=f"Invalid year. Valid years are {sorted(VALID_YEARS)}")
 
     logging.debug(f"Looking up {country_code}:{year}")
     data = rd.get(f"{country_code}:{year}")
@@ -223,7 +223,7 @@ def create_job(job: JobInput) -> Job:
 
     logging.info(f"Received job request: country_code={job.country_code}, "f"start_year={job.start_year}, end_year={job.end_year}")
     if job.start_year not in VALID_YEARS or job.end_year not in VALID_YEARS:
-        raise HTTPException(status_code=404, detail=f"start_year and end_year must be valid years: {sorted(VALID_YEARS)}")
+        raise HTTPException(status_code=400, detail=f"start_year and end_year must be valid years: {sorted(VALID_YEARS)}")
 
     if job.start_year > job.end_year:
         raise HTTPException(status_code=400, detail="start_year must be <= end_year")
