@@ -7,7 +7,9 @@ import csv
 import logging
 import os
 from typing import Optional
-from jobs import add_job, get_job_by_id, get_job_ids, Job, get_result
+from jobs import rdb, add_job, get_job_by_id, get_job_ids, Job, get_result
+from fastapi.responses import FileResponse
+
 
 logging.basicConfig(level=logging.DEBUG)
 app = FastAPI()
@@ -263,3 +265,23 @@ def get_results(jobid: str) -> dict:
     if result is None: 
         raise HTTPException(status_code=404, detail="Job not finished")
     return result
+
+@app.get('/download/{jid}')
+def download(jid: str):
+    """
+    Download the plot image for a completed job
+
+    Returns:
+        FileResponse: PNG image file for the requested job
+    """
+    path = f'/app/{jid}.png'
+
+    img = rdb.hget(f"{jid}:image", "data")
+
+    if img is None:
+        raise HTTPException(status_code=404, detail=f"No image found for job {jid}")
+
+    with open(path, 'wb') as f:
+        f.write(img)
+
+    return FileResponse(path, media_type='image/png', filename=f'{jid}.png')

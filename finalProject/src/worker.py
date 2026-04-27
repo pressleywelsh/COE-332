@@ -2,7 +2,7 @@ import json
 import logging
 import os
 import matplotlib.pyplot as plt
-from jobs import q, rd, results, get_job_by_id, start_job, update_job_status, save_result, JobStatus
+from jobs import q, rd, rdb, results, get_job_by_id, start_job, update_job_status, save_result, JobStatus
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -97,14 +97,12 @@ def do_work(jid: str) -> None:
     plt.title(f'Life Expectancy for {country}')
     plt.savefig('/output_image.png')
 
-    with open('/output_image.png', 'rb') as f:
-        img = f.read()
-
     save_result(jid, result)
+
     with open('/output_image.png', 'rb') as f:
         img = f.read()
 
-    results.hset(jid, 'image', img)
+    rdb.hset(f"{jid}:image", "data", img)
 
     update_job_status(jid, JobStatus.SUCCESS)
     logging.info(f"Job {jid} completed successfully")

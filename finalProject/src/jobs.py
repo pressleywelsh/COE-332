@@ -17,7 +17,8 @@ _redis_port = 6379
 rd = redis.Redis(host=_redis_ip, port=_redis_port, db=0, decode_responses=True)
 q = HotQueue("queue", host=_redis_ip, port=_redis_port, db=1)
 jdb = redis.Redis(host=_redis_ip, port=_redis_port, db=2, decode_responses=True)
-rdb = redis.Redis(host=_redis_ip, port=_redis_port, db=3, decode_responses=True)
+rdb = redis.Redis(host=_redis_ip, port=_redis_port, db=3)
+results = redis.Redis(host=_redis_ip, port=_redis_port, db=3)
 
 
 class JobStatus(str, Enum):
