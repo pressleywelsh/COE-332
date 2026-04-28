@@ -86,6 +86,7 @@ Returns a list of all job IDs.
 - ``` GET /jobs/{jobid} ```
 Returns the information and status for a given job.
 
+
 ### Job System
 This application includes a job queue system using Redis and HotQueue. Each job computes summary statistics for a given country over a given period, such as number of records, average health expenditure, and minimum/maximum life expectancy.
 
@@ -203,7 +204,7 @@ Output:
 }
 ```
 
-Get Job Status and Results:
+Get Job Status:
 ```
 curl localhost:5000/jobs/4937df6c-03ff-4dd6-9a04-292ba3d18935
 ```
@@ -226,6 +227,12 @@ Output:
   }
 }
 ```
+
+Run Tests:
+```
+PYTHONPATH=.:src REDIS_IP=localhost uv run pytest
+```
+We were receiving recurring errors with uv run pytest alone, so we used Claude to help us resolve this error. Claude suggested we use ```PYTHONPATH=.:src REDIS_IP=localhost``` , and this resulted in all of our tests passing.
 
 ### Diagram
 <img width="641" height="273" alt="Diagram" src="https://github.com/user-attachments/assets/4f5d9f7b-40a7-40a3-8c9c-f5ffb05f6b13" />
