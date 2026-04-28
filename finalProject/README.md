@@ -265,7 +265,7 @@ curl localhost:5000/results/ea14dfef-499c-4779-90b7-acfa464c3f4c
 ```
 Kubernetes
 ```
-curl http://pressleywelsh524.coe332.tacc.cloud/jobs/ea14dfef-499c-4779-90b7-acfa464c3f4c
+curl http://pressleywelsh524.coe332.tacc.cloud/results/ea14dfef-499c-4779-90b7-acfa464c3f4c
 ```
 
 Output:
@@ -280,6 +280,24 @@ Output:
 "max_life_expect":78.7878048780488,
 "avg_health_exp":16.671135711999998
 }
+```
+
+Download Plot:
+Docker
+```
+curl localhost:5000/download/ea14dfef-499c-4779-90b7-acfa464c3f4c -o output.png
+```
+
+Kubernetes
+```
+curl http://pressleywelsh524.coe332.tacc.cloud/download/ea14dfef-499c-4779-90b7-acfa464c3f4c -o output.png
+```
+
+Output:
+```
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100 26262  100 26262    0     0  1406k      0 --:--:-- --:--:-- --:--:-- 1424k
 ```
 
 Run Tests:
