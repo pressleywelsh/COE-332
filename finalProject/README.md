@@ -219,7 +219,7 @@ curl localhost:5000/jobs -X POST -d '{"country_code":"USA","start_year":2015,"en
 
 Kubernetes
 ```
-curl http://pressleywelsh524.coe332.tacc.cloud/jobs -X POST -d '{"country_code":"USA","start_year":2000,"end_year":2010}' -H "Content-Type: application/json"
+curl http://pressleywelsh524.coe332.tacc.cloud/jobs -X POST -d '{"country_code":"USA","start_year":2015,"end_year":2019}' -H "Content-Type: application/json"
 ```
 
 Output:
