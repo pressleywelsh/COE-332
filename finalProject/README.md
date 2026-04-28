@@ -113,6 +113,7 @@ Docker
 ```
 curl localhost:5000/data -X POST
 ```
+
 Kubernetes
 ```
 curl http://pressleywelsh524.coe332.tacc.cloud/data -X POST
@@ -126,8 +127,14 @@ Output:
 ```
 
 Get All Data:
+Docker
 ```
 curl localhost:5000/data
+```
+
+Kubernetes
+```
+curl http://pressleywelsh524.coe332.tacc.cloud/data
 ```
 
 Output:
@@ -136,7 +143,7 @@ Output:
   {
     "country": "Jamaica",
     "country_code": "JAM",
-    "year": 2023,
+    "year": 2016,
     "health_exp": null,
     "life_expect": null,
     "maternal_mortality": null,
@@ -151,21 +158,33 @@ Output:
 ```
 
 Get All Country Keys:
+Docker
 ```
 curl localhost:5000/countries
+```
+
+Kubernetes
+```
+curl http://pressleywelsh524.coe332.tacc.cloud/countries
 ```
 
 Output:
 ```
 [
-  "USA:2000",
-  "USA:2001"
+  "USA:2015",
+  "USA:2016"
 ]
 ```
 
 Get One Country-Year Record:
+Docker
 ```
-curl localhost:5000/countries/USA/2005
+curl localhost:5000/countries/USA/2018
+```
+
+Kubernetes
+```
+curl http://pressleywelsh524.coe332.tacc.cloud/countries/USA/2018
 ```
 
 Output:
@@ -173,7 +192,7 @@ Output:
 {
   "country": "United States",
   "country_code": "USA",
-  "year": 2005,
+  "year": 2018,
   "health_exp": 14.57,
   "life_expect": 77.48,
   "maternal_mortality": 13.0,
@@ -187,44 +206,73 @@ Output:
 ```
 
 Submit a Job:
+Docker
 ```
-curl localhost:5000/jobs -X POST -d '{"country_code":"USA","start_year":2000,"end_year":2010}' -H "Content-Type: application/json"
+curl localhost:5000/jobs -X POST -d '{"country_code":"USA","start_year":2015,"end_year":2019}' -H "Content-Type: application/json"
+```
+
+Kubernetes
+```
+curl http://pressleywelsh524.coe332.tacc.cloud/jobs -X POST -d '{"country_code":"USA","start_year":2000,"end_year":2010}' -H "Content-Type: application/json"
 ```
 
 Output:
 ```
 {
-  "jid": "4937df6c-03ff-4dd6-9a04-292ba3d18935",
+  "jid": "ea14dfef-499c-4779-90b7-acfa464c3f4c",
   "status": "QUEUED",
   "country_code": "USA",
-  "start_year": 2000,
-  "end_year": 2010,
+  "start_year": 2015,
+  "end_year": 2019,
   "start_time": null,
   "end_time": null
 }
 ```
 
 Get Job Status:
+Docker
 ```
-curl localhost:5000/jobs/4937df6c-03ff-4dd6-9a04-292ba3d18935
+curl localhost:5000/jobs/ea14dfef-499c-4779-90b7-acfa464c3f4c
+```
+Kubernetes
+```
+curl http://pressleywelsh524.coe332.tacc.cloud/jobs/ea14dfef-499c-4779-90b7-acfa464c3f4c
 ```
 
 Output:
 ```
 {
-  "jid": "4937df6c-03ff-4dd6-9a04-292ba3d18935",
-  "status": "FINISHED -- SUCCESS",
-  "country_code": "USA",
-  "start_year": 2000,
-  "end_year": 2010,
-  "start_time": "2026-04-08T10:00:00",
-  "end_time": "2026-04-08T10:00:05",
-  "result": {
-    "count": 11,
-    "avg_health_exp": 13.5,
-    "min_life_expect": 75.2,
-    "max_life_expect": 78.9
-  }
+"jid":"ea14dfef-499c-4779-90b7-acfa464c3f4c",
+"status":"FINISHED -- SUCCESS",
+"country_code":"USA",
+"start_year":2015,
+"end_year":2019,
+"start_time":"2026-04-28T02:31:55.253220",
+"end_time":"2026-04-28T02:31:56.553240"
+}
+```
+
+Get Job Result:
+Docker
+```
+curl localhost:5000/results/ea14dfef-499c-4779-90b7-acfa464c3f4c
+```
+Kubernetes
+```
+curl http://pressleywelsh524.coe332.tacc.cloud/jobs/ea14dfef-499c-4779-90b7-acfa464c3f4c
+```
+
+Output:
+```
+{
+"country_code":"USA",
+"start_year":2015,
+"end_year":2019,
+"count":5,
+"correlation":-0.6283391557457708,
+"min_life_expect":78.5390243902439,
+"max_life_expect":78.7878048780488,
+"avg_health_exp":16.671135711999998
 }
 ```
 
