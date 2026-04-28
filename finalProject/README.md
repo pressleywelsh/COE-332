@@ -235,6 +235,25 @@ Output:
 }
 ```
 
+Get All Jobs:
+Docker
+```
+curl localhost:5000/jobs
+```
+
+Kubernetes
+```
+curl http://pressleywelsh524.coe332.tacc.cloud/jobs
+```
+
+Output:
+```
+{
+  "ea14dfef-499c-4779-90b7-acfa464c3f4c",
+  "b3f12a90-1c2d-4e5f-8a3b-d7c9e0f12345"
+}
+```
+
 Get Job Status:
 Docker
 ```
