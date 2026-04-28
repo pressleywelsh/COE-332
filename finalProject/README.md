@@ -85,6 +85,12 @@ Creates a new job using a country code and year range.
 Returns a list of all job IDs.
 - ``` GET /jobs/{jobid} ```
 Returns the information and status for a given job.
+- ``` GET /countries/year/{year} ```
+Returns all country records for one year.
+- ``` GET /results/{jobid} ```
+Returns the result for a completed job of given id.
+- ``` GET /download/{jid} ```
+Downloads the output.png for a completed job of given id.
 
 
 ### Job System
