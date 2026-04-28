@@ -1,6 +1,7 @@
 import requests
+import os
 
-url = "http://127.0.0.1:5000"
+url = os.getenv("URL", "http://127.0.0.1:5000")
 
 response_help = requests.get(f"{url}/help")
 response_data = requests.get(f"{url}/data")

@@ -8,7 +8,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: pressleywelsh524.coe332.tacc.cloud
+    - host: test-pressleywelsh524.coe332.tacc.cloud
       http:
         paths:
           - path: /
