@@ -54,7 +54,8 @@ def help():
             "/jobs GET": "list all jobs",
             "/jobs/{jobid} GET": "get job info",
             "/countries/{country_code} GET": "return all records for one country",
-            "/results/{jobid} GET": "get job result"
+            "/results/{jobid} GET": "get job result",
+            "/download/{jid} GET": "download output.png for a completed job"
         }
     }
 

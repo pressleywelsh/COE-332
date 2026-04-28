@@ -103,13 +103,13 @@ def do_work(jid: str) -> None:
     plt.xlabel('Health Expenditure')
     plt.ylabel('Life Expectancy')
     plt.title(f'Life Expectancy vs Health Expenditure ({country} from {start}-{end})')
-    plt.savefig('/output_image.png')
+    plt.savefig('output_image.png')
 
     result = {"country_code": country, "start_year": start, "end_year": end, "count": len(matches), "correlation": correlation, "min_life_expect": min_life_expect, "max_life_expect": max_life_expect, "avg_health_exp": avghealthexp}
 
     save_result(jid, result)
 
-    with open('/output_image.png', 'rb') as f:
+    with open('output_image.png', 'rb') as f:
         img = f.read()
 
     rdb.hset(f"{jid}:image", "data", img)

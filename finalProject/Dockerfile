@@ -17,4 +17,4 @@ RUN uv sync
 # COPY source code
 COPY src /app/src
 
-CMD ["uv", "run", "--", "fastapi", "dev", "--host", "0.0.0.0", "src/api.py"]
+CMD ["uv", "run", "--", "fastapi", "dev", "--host", "0.0.0.0", "src/FastAPI_api.py"]
