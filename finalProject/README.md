@@ -18,7 +18,7 @@ This project uses Redis for:
 ### Structure
 - Dockerfile: Has everything necessary to build and run docker image which runs the FastAPI application 
 - docker-compose.yml: defines and run containers 
-- api.py: FastAPI app that loads, stores, and retrieves world health data and handles job requests 
+- FastAPI_api.py: FastAPI app that loads, stores, and retrieves world health data and handles job requests 
 - jobs.py: handles job creation, storage, and queueing using Redis 
 - worker.py: processes jobs from the queue and updates their status 
 - world_health_data.csv: dataset used to fill database 
