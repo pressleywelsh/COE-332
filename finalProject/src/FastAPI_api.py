@@ -55,7 +55,8 @@ def help():
             "/jobs/{jobid} GET": "get job info",
             "/countries/{country_code} GET": "return all records for one country",
             "/results/{jobid} GET": "get job result",
-            "/download/{jid} GET": "download output.png for a completed job"
+            "/download/{jid} GET": "download output.png for a completed job",
+            "/data/stats GET": "return summary statistics for the dataset"
         }
     }
 
@@ -114,6 +115,162 @@ def get_data() -> list:
     for key in rd.keys():
         output.append(json.loads(rd.get(key)))
     return output
+
+@app.get("/data/stats")
+def get_stats() -> dict:
+    """
+    Returns summary statistics for the data in Redis
+
+    Returns:
+    dict: formatted summary statistics for the dataset
+    """
+    logging.info("Computing dataset statistics")
+
+    records = []
+    for key in rd.keys():
+        records.append(countryData(**json.loads(rd.get(key))))
+
+    if len(records) == 0:
+        raise HTTPException(status_code=404, detail="No data loaded. POST /data first.")
+
+    life_expects = []
+    health_exps = []
+    infant_morts = []
+    maternal_morts = []
+    neonatal_morts = []
+    under5_morts = []
+    hiv_prevs = []
+    undernourishments = []
+
+    for record in records:
+        if record.life_expect is not None:
+            life_expects.append(record.life_expect)
+        if record.health_exp is not None:
+            health_exps.append(record.health_exp)
+        if record.infant_mortality is not None:
+            infant_morts.append(record.infant_mortality)
+        if record.maternal_mortality is not None:
+            maternal_morts.append(record.maternal_mortality)
+        if record.neonatal_mortality is not None:
+            neonatal_morts.append(record.neonatal_mortality)
+        if record.under_5_mortality is not None:
+            under5_morts.append(record.under_5_mortality)
+        if record.prev_hiv is not None:
+            hiv_prevs.append(record.prev_hiv)
+        if record.prev_undernourishment is not None:
+            undernourishments.append(record.prev_undernourishment)
+
+    mean_life = sum(life_expects) / len(life_expects)
+    mean_exp = sum(health_exps) / len(health_exps)
+    mean_infant = sum(infant_morts) / len(infant_morts)
+    mean_mat = sum(maternal_morts) / len(maternal_morts)
+    mean_neo = sum(neonatal_morts) / len(neonatal_morts)
+    mean_u5 = sum(under5_morts) / len(under5_morts)
+    mean_hiv = sum(hiv_prevs) / len(hiv_prevs)
+    mean_undr = sum(undernourishments) / len(undernourishments)
+
+    std_life = (sum((value - mean_life) ** 2 for value in life_expects) / len(life_expects)) ** 0.5
+    std_exp = (sum((value - mean_exp) ** 2 for value in health_exps) / len(health_exps)) ** 0.5
+
+    max_life_rec = records[0]
+    min_life_rec = records[0]
+    max_exp_rec = records[0]
+    min_exp_rec = records[0]
+    max_mat_rec = records[0]
+    min_mat_rec = records[0]
+    max_hiv_rec = records[0]
+
+    for record in records:
+
+        if record.life_expect is not None:
+            if max_life_rec.life_expect is None or record.life_expect > max_life_rec.life_expect:
+                max_life_rec = record
+            if min_life_rec.life_expect is None or record.life_expect < min_life_rec.life_expect:
+                min_life_rec = record
+
+        if record.health_exp is not None:
+            if max_exp_rec.health_exp is None or record.health_exp > max_exp_rec.health_exp:
+                max_exp_rec = record
+            if min_exp_rec.health_exp is None or record.health_exp < min_exp_rec.health_exp:
+                min_exp_rec = record
+
+        if record.maternal_mortality is not None:
+            if max_mat_rec.maternal_mortality is None or record.maternal_mortality > max_mat_rec.maternal_mortality:
+                max_mat_rec = record
+            if min_mat_rec.maternal_mortality is None or record.maternal_mortality < min_mat_rec.maternal_mortality:
+                min_mat_rec = record
+
+        if record.prev_hiv is not None:
+            if max_hiv_rec.prev_hiv is None or record.prev_hiv > max_hiv_rec.prev_hiv:
+                max_hiv_rec = record
+
+    life_2015 = []
+    life_2019 = []
+
+    for record in records:
+        if record.year == 2015 and record.life_expect is not None:
+            life_2015.append(record.life_expect)
+        if record.year == 2019 and record.life_expect is not None:
+            life_2019.append(record.life_expect)
+
+    avg_2015 = sum(life_2015) / len(life_2015)
+    avg_2019 = sum(life_2019) / len(life_2019)
+    le_change = avg_2019 - avg_2015
+
+    by_country = {}
+    for record in records:
+        if record.country_code not in by_country:
+            by_country[record.country_code] = []
+        by_country[record.country_code].append(record)
+
+    improved = 0
+    for country_code in by_country:
+        country_records = sorted(by_country[country_code], key=lambda record: record.year)
+
+        if len(country_records) > 1:
+            first = country_records[0]
+            last = country_records[-1]
+
+            if first.life_expect is not None and last.life_expect is not None:
+                if last.life_expect > first.life_expect:
+                    improved += 1
+
+    lines = [
+            "GLOBAL HEALTH DATASET — KEY STATISTICS (2015-2019)",
+
+        "DATASET OVERVIEW",
+        f"Total records: {len(records)}",
+        f"Countries: {len(by_country)}",
+
+        "LIFE EXPECTANCY",
+        f"Global mean: {mean_life:.2f} years",
+        f"Standard deviation: {std_life:.2f} years",
+        f"Highest: {max_life_rec.life_expect:.2f} yrs — {max_life_rec.country} ({max_life_rec.year})",
+        f"Lowest: {min_life_rec.life_expect:.2f} yrs — {min_life_rec.country} ({min_life_rec.year})",
+        f"Change 2015 to 2019: {le_change:+.2f} years",
+        f"Countries that improved: {improved} / {len(by_country)}",
+
+        "HEALTH EXPENDITURE (% of GDP)",
+        f"Global mean: {mean_exp:.2f}%",
+        f"Standard deviation: {std_exp:.2f}%",
+        f"Highest: {max_exp_rec.health_exp:.2f}% — {max_exp_rec.country} ({max_exp_rec.year})",
+        f"Lowest: {min_exp_rec.health_exp:.2f}% — {min_exp_rec.country} ({min_exp_rec.year})",
+
+        "MORTALITY INDICATORS",
+        f"Mean infant mortality: {mean_infant:.2f} per 1,000 births",
+        f"Mean maternal mortality: {mean_mat:.2f} per 100,000 births",
+        f"Highest maternal mortality: {max_mat_rec.maternal_mortality:.2f} — {max_mat_rec.country} ({max_mat_rec.year})",
+        f"Lowest maternal mortality: {min_mat_rec.maternal_mortality:.2f} — {min_mat_rec.country} ({min_mat_rec.year})",
+        f"Mean under-5 mortality: {mean_u5:.2f} per 1,000",
+        f"Mean neonatal mortality: {mean_neo:.2f} per 1,000",
+
+        "HIV & UNDERNOURISHMENT",
+        f"Mean HIV prevalence: {mean_hiv:.2f}% of adults 15-49",
+        f"Highest HIV prevalence: {max_hiv_rec.prev_hiv:.2f}% — {max_hiv_rec.country} ({max_hiv_rec.year})",
+        f"Mean undernourishment: {mean_undr:.2f}% of population"
+        ]
+
+    return { "stats": " | ".join(lines)}
 
 @app.delete("/data")
 def delete_data() -> dict:

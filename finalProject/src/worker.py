@@ -84,7 +84,9 @@ def do_work(jid: str) -> None:
     logging.debug(f"Max life expectancy: {max_life_expect}")
     
     x_values = []
-    y_values = []
+    y_values_lifeExp = []
+    y_values_prevHiv = []
+    y_values_infMort = []
 
     for record in matches:
         if record["health_exp"] is not None and record["life_expect"] is not None and record["prev_hiv"] is not None and record["infant_mortality"] is not None:
@@ -93,21 +95,37 @@ def do_work(jid: str) -> None:
             y_values_prevHiv.append(record["prev_hiv"])
             y_values_infMort.append(record["infant_mortality"])
 
-    plt.plot(x_values, y_values_lifeExp)
-    plt.plot(x_values, y_values_prevHiv)
-    plt.plot(x_values, y_values_infMort)
+    fig, axs = plt.subplots(3, 1, figsize=(6, 10))
 
-    correlation = None
+    axs[0].scatter(x_values, y_values_lifeExp)
     if len(x_values) > 1:
-        correlation = np.corrcoef(x_values, y_values_lifeExp)[0, 1]
+        m, b = np.polyfit(x_values, y_values_lifeExp, 1)
+        axs[0].plot(x_values, [m*x + b for x in x_values])
+    axs[0].set_title("Life Expectancy vs Health Expenditure")
+    axs[0].set_ylabel("Life Expectancy")
+    axs[0].grid(True)
 
-    plt.scatter(x_values, y_values)
-    plt.xlabel('Health Expenditure')
-    plt.ylabel('Life Expectancy')
-    plt.title(f'Life Expectancy vs Health Expenditure ({country} from {start}-{end})')
-    plt.savefig('output_image.png')
+    axs[1].scatter(x_values, y_values_prevHiv)
+    if len(x_values) > 1:
+        m, b = np.polyfit(x_values, y_values_prevHiv, 1)
+        axs[1].plot(x_values, [m*x + b for x in x_values])
+    axs[1].set_title("HIV Prevalence vs Health Expenditure")
+    axs[1].set_ylabel("HIV Prevalence (%)")
+    axs[1].grid(True)
 
-    result = {"country_code": country, "start_year": start, "end_year": end, "count": len(matches), "correlation of life expectancy vs health expenditure": correlation, "min_life_expect": min_life_expect, "max_life_expect": max_life_expect, "avg_health_exp": avghealthexp}
+    axs[2].scatter(x_values, y_values_infMort)
+    if len(x_values) > 1:
+        m, b = np.polyfit(x_values, y_values_infMort, 1)
+        axs[2].plot(x_values, [m*x + b for x in x_values])
+    axs[2].set_title("Infant Mortality vs Health Expenditure")
+    axs[2].set_xlabel("Health Expenditure (% of GDP)")
+    axs[2].set_ylabel("Infant Mortality")
+    axs[2].grid(True)
+
+    plt.tight_layout()
+    plt.savefig("output_image.png")
+
+    result = {"country_code": country, "start_year": start, "end_year": end, "count": len(matches), "min_life_expect": min_life_expect, "max_life_expect": max_life_expect, "avg_health_exp": avghealthexp}
 
     save_result(jid, result)
 
