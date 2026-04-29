@@ -71,6 +71,8 @@ Returns full list of routes.
 Loads data from the CSV into Redis as pydantic models.
 - ``` GET /data ```
 Returns all records in Redis.
+- ``` GET /data/stats ```
+Returns summary statistics for the entire dataset, including averages, extremes, and trends across years.
 - ``` DELETE /data ```
 Deletes all records from Redis.
 - ``` GET /countries ```
@@ -161,6 +163,24 @@ Output:
     "prev_undernourishment": null
   }
 ]
+```
+
+Get Dataset Statistics:
+Docker
+```
+curl localhost:5000/data/stats
+```
+
+Kubernetes
+```
+curl http://pressleywelsh524.coe332.tacc.cloud/data/stats
+```
+
+Output:
+```
+{
+"stats":"GLOBAL HEALTH DATASET — KEY STATISTICS (2015-2019) | DATASET OVERVIEW | Total records: 1330 | Countries: 266 | LIFE EXPECTANCY | Global mean: 72.20 years | Standard deviation: 7.51 years | Highest: 85.16 yrs — Hong Kong SAR, China (2019) | Lowest: 51.10 yrs — Lesotho (2015) | Change 2015 to 2019: +0.95 years | Countries that improved: 238 / 266 | HEALTH EXPENDITURE (% of GDP) | Global mean: 6.48% | Standard deviation: 2.90% | Highest: 24.28% — Tuvalu (2017) | Lowest: 1.82% — Papua New Guinea (2015) | MORTALITY INDICATORS | Mean infant mortality: 23.13 per 1,000 births | Mean maternal mortality: 161.80 per 100,000 births | Highest maternal mortality: 1288.00 — South Sudan (2016) | Lowest maternal mortality: 1.00 — Belarus (2019) | Mean under-5 mortality: 30.92 per 1,000 | Mean neonatal mortality: 13.83 per 1,000 | HIV & UNDERNOURISHMENT | Mean HIV prevalence: 1.68% of adults 15-49 | Highest HIV prevalence: 29.90% — Eswatini (2015) | Mean undernourishment: 9.76% of population"
+}
 ```
 
 Get All Country Keys:
