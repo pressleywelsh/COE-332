@@ -371,6 +371,13 @@ def get_country_all_years(country_code: str) -> list:
         key_str = key.decode("utf-8")
         if key_str.startswith(f"{country_code}:"):
             output.append(json.loads(rd.get(key)))
+    
+    if len(output) == 0:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Country code '{country_code}' not found"
+        )
+
     return output
 
 @app.post("/jobs")
